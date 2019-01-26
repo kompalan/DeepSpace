@@ -14,11 +14,19 @@ import edu.wpi.first.wpilibj.TimedRobot;
 public class Robot extends TimedRobot{
   
   private static XBoxController driver;
+  private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
+  private static final String TEST_FILE_PATH = "../../../../config/config.json";
 
   @Override
   public void robotInit() {
+    JSONConstants.setFilePath("/home/lvuser/config/config.json");
+    JSONConstants.populateMap();
+    JSONConstants.test();
+
     DriveTrain.getInstance();
     TeleOp.getInstance();
+
+
   }
 
   @Override

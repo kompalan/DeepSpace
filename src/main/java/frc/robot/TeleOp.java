@@ -3,7 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleOp {
-	private static XBoxController driver;
+	private static XBoxController driver, manip;
 	private static TeleOp instance;
 		
 	public static TeleOp getInstance() {
@@ -13,18 +13,19 @@ public class TeleOp {
 	}
 	
 	private TeleOp(){
-		//Should Init DriveTrain, Elevator, and other stuff
-		driver = new XBoxController(0);
+		//Should get Instance of  DriveTrain, Elevator, and other stuff
+		driver = new XBoxController((int) JSONConstants.get("xbPosDriver"));
+		manip = new XBoxController((int) JSONConstants.get("xbPosManip"));
 	}
 	
 	public static void init(){
-		
+		//Should init DriveTrain, Elevator etc.
 	}
 	
 	public static void run(){
 
-        //Basically a bunch of if statements
-		DriveTrain.arcadeDrive(driver.getRightStickYAxis(), Utils.negPowTwo(driver.getLeftStickXAxis()));
+		//Controller Mappings Here (see picture)
+		DriveTrain.arcadeDrive(driver.getLeftStickXAxis(), Utils.negPowTwo(driver.getRightStickYAxis()));
 	
 	}
 }

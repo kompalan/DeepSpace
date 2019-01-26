@@ -14,7 +14,8 @@ import org.json.simple.parser.ParseException;
  * 
  * @author Anurag Kompalli
  * 
- *         <summary> Method for saving, retrieving and updating config values
+ *         <summary> 
+ * 		   Method for saving, retrieving and updating config values
  *         without having to re-deploy code every time. Reads and Parses a JSON
  *         File and maps its keys and values to the configValues HashMap
  *         </summary>
@@ -29,7 +30,6 @@ public class JSONConstants {
 
 	// defines the file path and name of the config file
 	private static String FILE_PATH;
-
 	/**
 	 * <summary> Tester Class: Tests whether one is able to read and update the
 	 * values within the configValues map </summary>
@@ -70,11 +70,13 @@ public class JSONConstants {
 		return configValues.size();
 	}
 	/**
-	 * <summary> The <code>populateMap()</code> method takes a JSON file and reads
+	 * <summary> 
+	 * The <code>populateMap()</code> method takes a JSON file and reads
 	 * the keys and values.
 	 * 
 	 * Uses these keys and values to populate the configValues HashMap with the
-	 * relevant values needed for the match </summary>
+	 * relevant values needed for the match 
+	 * </summary>
 	 */
 	public static int populateMap() {
 
@@ -112,6 +114,7 @@ public class JSONConstants {
 			System.err.println("The file " + FILE_PATH + " was not found at the specified path");
 			notFoundEx.printStackTrace();
 
+			
 			// return FAIL
 			return -1;
 		} catch (IOException ioe) {
@@ -157,10 +160,16 @@ public class JSONConstants {
 			// making sure object is there
 			if (value != null) {
 
-				// Safely Converts a Long to an Integer
-				// if (value instanceof Long) {
-				// 	return ((Long) value).intValue();
-				// }
+				if (value instanceof Long) {
+					//Safely Casts Type Long to Integer
+					return ((Long) value).intValue();
+				}else if (value instanceof Double){
+					//Safely Casts to Double
+					return (Double) value;
+				}else if (value instanceof String){
+					//Safely Casts to String
+					return (String) value;
+				}
 
 				// return the value as a generic Object (user can cast as necessary)
 				return value;
