@@ -1,5 +1,3 @@
-package frc.robot;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,7 +26,7 @@ public class JSONConstants {
 	private static HashMap<String, Object> configValues = new HashMap<String, Object>();
 
 	// defines the file path and name of the config file
-	private static String FILE_PATH;
+	private static final String FILE_PATH = "config/config.json";
 
 	/**
 	 * <summary> Tester Class: Tests whether one is able to read and update the
@@ -62,13 +60,6 @@ public class JSONConstants {
 		System.out.println("Second populateMap() returned: " + status2);
 	}
 
-
-	public static String getFilePath(){
-		return JSONConstants.FILE_PATH;
-	}
-	public static int getMapLength(){
-		return configValues.size();
-	}
 	/**
 	 * <summary> The <code>populateMap()</code> method takes a JSON file and reads
 	 * the keys and values.
@@ -174,7 +165,7 @@ public class JSONConstants {
 		return -1;
 	}
 
-	public static void setFilePath(String filePath){
-		FILE_PATH = filePath;
+	public static HashMap<String, Object> getMap(){
+		return configValues;
 	}
 }
