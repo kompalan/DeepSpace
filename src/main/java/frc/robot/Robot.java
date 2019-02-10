@@ -13,52 +13,92 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot{
   
-  private static XBoxController driver;
+  private static XBoxController manip, driver;
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
-  private static final String TEST_FILE_PATH = "../../../../config/config.json";
 
   @Override
   public void robotInit() {
-    JSONConstants.setFilePath("/home/lvuser/config/config.json");
-    JSONConstants.populateMap();
-    JSONConstants.test();
+    // JSONConstants.setFilePath(this.ROBOT_FILE_PATH);
+    // JSONConstants.populateMap();
+    // JSONConstants.test();
 
     DriveTrain.getInstance();
     TeleOp.getInstance();
-
-
+    Elevator.getInstance();
+    Ingestor.getInstance();
+    Diagnostics.getInstance();
+    manip = new XBoxController(1);
+    driver = new XBoxController(0);
   }
-
-  @Override
-  public void robotPeriodic() {
-  }
-
 
   @Override
   public void autonomousInit() {
-
+    TeleOp.init();
   }
 
 
   @Override
   public void autonomousPeriodic() {
-
+    TeleOp.run();
   }
   
   @Override
 	public void teleopInit(){
     //Starts Teleop 
-    TeleOp.init();
+    //TeleOp.init();
 	}
 
   @Override
   public void teleopPeriodic() {
-    TeleOp.run();
-  }
+    //TeleOp.run();
+    Diagnostics.pushDriveTrainDiagnostics();
+    Diagnostics.pushElevatorDiagnostics();
+    Diagnostics.pushIngestorDiagnostics();
+    Ingestor.beltStop();
+    Ingestor.ingestCargo(0.0);
+    Elevator.setFrontHolderForward(0.0);
+    Elevator.setBackHolderForward(0.0);
+    if(manip.getLeftStickYAxis() < -0.1){
+      Ingestor.beltUp();
+      Ingestor.ingestCargo(-manip.getLeftStickYAxis());
+      Elevator.setFrontHolderForward(1);
+      Elevator.setBackHolderForward(1);
+    }else if(manip.getLeftStickYAxis() > 0.1){
+      Elevator.setFrontHolderForward(1);
+      Elevator.setBackHolderForward(-1);
+    }
 
+    if(Math.abs(manip.getRightStickYAxis()) > 0.1){
+      Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 2));
+    }
 
-  @Override
-  public void testPeriodic() {
-   
+    if(manip.getRightBumper()){
+      Elevator.setClawIn();
+    }else{
+      Elevator.setClawOut();
+    }
+
+    if(manip.getRightTriggerButton()){
+      Elevator.flipClawUp();
+    }else{
+      Elevator.flipClawDown();
+    }
+
+    if(manip.getLeftBumper()){
+      Ingestor.ingestorDown();
+    }else{
+      Ingestor.ingestorUp();
+    }
+
+    if(driver.getLeftStickXAxis() != 0.1 || driver.getRightStickYAxis() != 0.1){
+			DriveTrain.arcadeDrive(driver.getLeftStickXAxis(), Utils.negPowTwo(driver.getRightStickYAxis()));
+    }
+    
+    if(driver.getRightBumper()){
+      DriveTrain.shiftUp();
+    }else{
+      DriveTrain.shiftDown();
+    }
+
   }
 }

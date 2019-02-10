@@ -13,13 +13,7 @@ public class Limelight {
     
 	public void testFeed(){
 		double x = table.getEntry("tx").getDouble(0.0);
-		double y = table.getEntry("ty").getDouble(0.0);
-		if((x <= 0.5) && (x >= -0.5)){
-			//System.out.println(table.getEntry("tx").getDouble(0.0));
-		}else{
-			//System.out.println(table.getEntry("tx").getDouble(0.0));
-		}
-		
+		double y = table.getEntry("ty").getDouble(0.0);		
 		
 	}
 	

@@ -5,14 +5,19 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import com.revrobotics.ControlType;
 
 public class DriveTrain {
     private static CANSparkMax rightMotorFront, rightMotorMiddle, rightMotorBack, leftMotorFront, leftMotorMiddle, leftMotorBack;
     private static CANPIDController pidControllerLeftFront, pidControllerRightFront;
     private static CANEncoder encoderLeftFront, encoderRightFront;
+    private static AHRS hyro;
+    private static Solenoid shifter;
 
-    public static DriveTrain instance;
+    public static DriveTrain instance = null;
     //public static Limelight limelight;
 
     /**
@@ -30,16 +35,21 @@ public class DriveTrain {
     }
 
     public DriveTrain() {
+
         //Right SPARK Motors
-        rightMotorFront = new CANSparkMax((int) JSONConstants.get("driveTrainRightFront"), MotorType.kBrushless);
-        rightMotorMiddle = new CANSparkMax((int) JSONConstants.get("driveTrainRightMiddle"), MotorType.kBrushless);
-        rightMotorBack = new CANSparkMax((int) JSONConstants.get("driveTrainRightBack"), MotorType.kBrushless);
+        rightMotorFront = new CANSparkMax(Constants.DT_TALON_RIGHTFRONT, MotorType.kBrushless);
+        rightMotorMiddle = new CANSparkMax(Constants.DT_TALON_RIGHTMIDDLE, MotorType.kBrushless);
+        rightMotorBack = new CANSparkMax(Constants.DT_TALON_RIGHTBACK, MotorType.kBrushless);
 
 
-        leftMotorFront = new CANSparkMax((int) JSONConstants.get("driveTrainLeftFront"), MotorType.kBrushless);
-        leftMotorMiddle = new CANSparkMax((int) JSONConstants.get("driveTrainLeftMiddle"), MotorType.kBrushless);
-        leftMotorBack = new CANSparkMax((int) JSONConstants.get("driveTrainLeftBack"), MotorType.kBrushless);
+        leftMotorFront = new CANSparkMax(Constants.DT_TALON_LEFTFRONT, MotorType.kBrushless);
+        leftMotorMiddle = new CANSparkMax(Constants.DT_TALON_LEFTMIDDLE, MotorType.kBrushless);
+        leftMotorBack = new CANSparkMax(Constants.DT_TALON_LEFTBACK, MotorType.kBrushless);
 
+        hyro = new AHRS(SPI.Port.kMXP);
+
+        shifter = new Solenoid(Constants.SOLENOID_SHIFTER);
+        
         pidControllerRightFront = rightMotorFront.getPIDController();
         pidControllerLeftFront = leftMotorFront.getPIDController();
         
@@ -48,18 +58,18 @@ public class DriveTrain {
         encoderLeftFront = leftMotorFront.getEncoder();
 
 
-        pidControllerRightFront.setP((double)JSONConstants.get("SPARK_kP_RIGHT"));
-        pidControllerRightFront.setI((double)JSONConstants.get("SPARK_kI_RIGHT"));
-        pidControllerRightFront.setD((double)JSONConstants.get("SPARK_kD_RIGHT"));
-        pidControllerRightFront.setIZone((double)JSONConstants.get("SPARK_kIz_RIGHT"));
+        pidControllerRightFront.setP(Constants.kP);
+        pidControllerRightFront.setI(Constants.kI);
+        pidControllerRightFront.setD(Constants.kD);
+        pidControllerRightFront.setIZone(Constants.kIz);
 
-        pidControllerLeftFront.setP((double)JSONConstants.get("SPARK_kP_LEFT"));
-        pidControllerLeftFront.setI((double)JSONConstants.get("SPARK_kI_LEFT"));
-        pidControllerLeftFront.setD((double)JSONConstants.get("SPARK_kD_LEFT"));
-        pidControllerLeftFront.setIZone((double)JSONConstants.get("SPARK_kIz_LEFT"));
+        pidControllerLeftFront.setP(Constants.kP);
+        pidControllerLeftFront.setI(Constants.kI);
+        pidControllerLeftFront.setD(Constants.kD);
+        pidControllerLeftFront.setIZone(Constants.kIz);
 
-        pidControllerLeftFront.setOutputRange((double)JSONConstants.get("SPARK_kMinOutput"), (double)JSONConstants.get("SPARK_kMaxOutput"));
-        pidControllerRightFront.setOutputRange((double)JSONConstants.get("SPARK_kMinOutput"),(double)JSONConstants.get("SPARK_kMaxOutput"));
+        pidControllerLeftFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
+        pidControllerRightFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
 
         rightMotorMiddle.follow(rightMotorFront);
         rightMotorBack.follow(rightMotorFront);
@@ -69,10 +79,6 @@ public class DriveTrain {
     }
 
     public static void drive(double powerLeft, double powerRight){
-
-        //Set Power To Front Motors (Others are set to Follow Front Motors)
-        // rightMotorFront.set(powerRight);
-        // leftMotorFront.set(powerLeft);
         pidControllerRightFront.setReference(powerRight, ControlType.kDutyCycle);
         pidControllerLeftFront.setReference(powerLeft, ControlType.kDutyCycle);
     }
@@ -87,6 +93,14 @@ public class DriveTrain {
 		drive(Utils.ensureRange(fwd + tur, -1d, 1d), Utils.ensureRange(fwd - tur, -1d, 1d));
     }
 
+    public static void shiftUp(){
+        shifter.set(true);
+    }
+
+    public static void shiftDown(){
+        shifter.set(false);
+    }
+
     public static double getEncoderRight(){
         return encoderRightFront.getPosition();
     }
@@ -95,5 +109,28 @@ public class DriveTrain {
         return encoderLeftFront.getPosition();
     }
 
+    //Diagnostics
+    public static double getRightMotorFrontTemp(){
+        return rightMotorFront.getMotorTemperature();
+    }
 
+    public static double getRightMotorMiddleTemp(){
+        return rightMotorMiddle.getMotorTemperature();
+    }
+
+    public static double getRightMotorBackTemp(){
+        return rightMotorBack.getMotorTemperature();
+    }
+
+    public static double getLeftMotorFrontTemp(){
+        return leftMotorFront.getMotorTemperature();
+    }
+
+    public static double getLeftMotorMiddleTemp(){
+        return leftMotorMiddle.getMotorTemperature();
+    }
+
+    public static double getLeftMotorBackTemp(){
+        return leftMotorBack.getMotorTemperature();
+    }
 }

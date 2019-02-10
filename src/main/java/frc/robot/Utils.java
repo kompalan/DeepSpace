@@ -18,4 +18,20 @@ public class Utils {
 			
 				
 	}
+
+	public static double inchesToEncs(double inches){
+		//Based on wheel circumfrence, perform calculation for inches.
+		return inches;
+	}
+
+	public static double expoDeadzone(double input, double deadzone, double exponent){
+		//http://www.mimirgames.com/articles/games/joystick-input-and-using-deadbands/
+		double deadzoned = (input - Math.signum(input) * deadzone)/(1-deadzone);
+
+		double expoed = Math.pow(Math.abs(deadzoned), exponent) * Math.signum(deadzoned);
+
+		return expoed;
+	}
+
+
 }

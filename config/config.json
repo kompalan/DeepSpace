@@ -1,0 +1,27 @@
+{
+    "dtTalonRightFront"  : 2,
+    "dtTalonRightMiddle" : 1, 
+    "dtTalonRightBack"   : 20,
+
+    "dtTalonLeftFront"   : 13, 
+    "dtTalonLeftMiddle"  : 14, 
+    "dtTalonLeftBack"    : 15, 
+
+    "ingestorTalonCargo" : 0, 
+    "ingestorTalonBelt"  : 0, 
+
+    "ingestorBeltPower"  : 0.5, 
+
+    "elevatorSparkMax"   : 0, 
+    "elevatorkP"         : 5E-5,
+    "elevatorkI"         : 1E-6,
+    "elevatorkD"         : 0,
+    "elevatorkFF"        : 0,
+    "elevatorkIZ"        : 0, 
+
+    "elevatorMaxOutput"  : 1.0, 
+    "elevatorMinOutput" : -1.0, 
+    "solenoid45"         : [4, 5]
+
+    
+}
