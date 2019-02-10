@@ -69,7 +69,7 @@ public class Robot extends TimedRobot{
     }
 
     if(Math.abs(manip.getRightStickYAxis()) > 0.1){
-      Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 2));
+      Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 1.2));
     }
 
     if(manip.getRightBumper()){
@@ -90,9 +90,13 @@ public class Robot extends TimedRobot{
       Ingestor.ingestorUp();
     }
 
-    if(driver.getLeftStickXAxis() != 0.1 || driver.getRightStickYAxis() != 0.1){
-			DriveTrain.arcadeDrive(driver.getLeftStickXAxis(), Utils.negPowTwo(driver.getRightStickYAxis()));
-    }
+		DriveTrain.arcadeDrive(
+      Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.15, 2), 
+      Utils.expoDeadzone(driver.getRightStickYAxis(), 0.15, 1.2)
+      );
+    
+    System.out.println("Left Stick: " + driver.getLeftStickXAxis());
+    System.out.println("Right Stick: " + driver.getRightStickYAxis());
     
     if(driver.getRightBumper()){
       DriveTrain.shiftUp();
@@ -100,5 +104,12 @@ public class Robot extends TimedRobot{
       DriveTrain.shiftDown();
     }
 
+  }
+
+  @Override
+  public void disabledPeriodic(){
+    Diagnostics.pushDriveTrainDiagnostics();
+    Diagnostics.pushElevatorDiagnostics();
+    Diagnostics.pushIngestorDiagnostics();
   }
 }

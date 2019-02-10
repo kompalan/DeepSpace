@@ -34,7 +34,7 @@ public class Diagnostics{
 
         diagnosticTable.getEntry("dtLeftFrontTemp").setDouble(DriveTrain.getLeftMotorFrontTemp());
         diagnosticTable.getEntry("dtLeftMiddleTemp").setDouble(DriveTrain.getLeftMotorMiddleTemp());
-        diagnosticTable.getEntry("dtLeftMiddleTemp").setDouble(DriveTrain.getLeftMotorBackTemp());
+        diagnosticTable.getEntry("dtLeftBackTemp").setDouble(DriveTrain.getLeftMotorBackTemp());
 
     }
 
