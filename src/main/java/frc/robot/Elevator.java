@@ -106,15 +106,21 @@ import edu.wpi.first.wpilibj.Solenoid;
     }
     
     //Diagnostic Information
-    public static double getElevatorTemp(){
-        return elevatorSparkRight.getMotorTemperature();
-    }
 
     public static void setPower(double power){
         elevatorPIDController.setReference(power, ControlType.kDutyCycle);
     }
 
-    public static double getAmps(){
+    public static double getLeftMotorCurrent(){
         return elevatorSparkLeft.getOutputCurrent();
+    }
+    public static double getLeftMotorTemperature(){
+        return elevatorSparkLeft.getMotorTemperature();
+    }
+    public static double getRightMotorCurrent(){
+        return elevatorSparkRight.getOutputCurrent();
+    }
+    public static double getRightMotorTemperature(){
+        return elevatorSparkRight.getMotorTemperature();
     }
  }

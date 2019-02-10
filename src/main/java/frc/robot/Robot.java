@@ -91,13 +91,11 @@ public class Robot extends TimedRobot{
     }
 
 		DriveTrain.arcadeDrive(
-      Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.15, 2), 
-      Utils.expoDeadzone(driver.getRightStickYAxis(), 0.15, 1.2)
+      Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.2, 2), 
+      Utils.expoDeadzone(driver.getRightStickYAxis(), 0.2, 1.2)
       );
     
-    System.out.println("Left Stick: " + driver.getLeftStickXAxis());
-    System.out.println("Right Stick: " + driver.getRightStickYAxis());
-    
+    //System.out.printf("Left: %05f  Right: %05f\n" , driver.getLeftStickXAxis(),driver.getRightStickYAxis());    
     if(driver.getRightBumper()){
       DriveTrain.shiftUp();
     }else{

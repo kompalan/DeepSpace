@@ -24,7 +24,11 @@ public class Diagnostics{
     }
 
     public static void pushElevatorDiagnostics(){
-        diagnosticTable.getEntry("elevatorTemp").setDouble(Elevator.getElevatorTemp());
+        pushDouble("elLeftTemp",Elevator.getLeftMotorTemperature());
+        pushDouble("elRightTemp",Elevator.getRightMotorTemperature());
+
+        pushDouble("elLeftCurrent",Elevator.getLeftMotorCurrent());
+        pushDouble("elRightCurrent",Elevator.getRightMotorCurrent());
     }
 
     public static void pushDriveTrainDiagnostics(){
@@ -36,6 +40,14 @@ public class Diagnostics{
         diagnosticTable.getEntry("dtLeftMiddleTemp").setDouble(DriveTrain.getLeftMotorMiddleTemp());
         diagnosticTable.getEntry("dtLeftBackTemp").setDouble(DriveTrain.getLeftMotorBackTemp());
 
+        pushDouble("dtRightFrontCurrent",DriveTrain.getRightMotorFrontCurrent());
+        pushDouble("dtRightMiddleCurrent",DriveTrain.getRightMotorMiddleCurrent());
+        pushDouble("dtRightBackCurrent",DriveTrain.getRightMotorBackCurrent());
+
+        pushDouble("dtLeftFrontCurrent",DriveTrain.getLeftMotorFrontCurrent());
+        pushDouble("dtLeftMiddleCurrent",DriveTrain.getLeftMotorMiddleCurrent());
+        pushDouble("dtLeftBackCurrent",DriveTrain.getLeftMotorBackCurrent());
+
     }
 
     public static void pushIngestorDiagnostics(){
@@ -45,6 +57,9 @@ public class Diagnostics{
         diagnosticTable.getEntry("cargoAlive").setBoolean(Ingestor.isCargoIngestorAlive());
     }
 
-    
+    static void pushDouble(String name, double value){
+        diagnosticTable.getEntry(name).setDouble(value);
+
+    }
 
 }

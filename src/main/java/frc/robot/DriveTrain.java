@@ -133,4 +133,27 @@ public class DriveTrain {
     public static double getLeftMotorBackTemp(){
         return leftMotorBack.getMotorTemperature();
     }
+    public static double getRightMotorFrontCurrent(){
+        return rightMotorFront.getOutputCurrent();
+    }
+
+    public static double getRightMotorMiddleCurrent(){
+        return rightMotorMiddle.getOutputCurrent();
+    }
+
+    public static double getRightMotorBackCurrent(){
+        return rightMotorBack.getOutputCurrent();
+    }
+
+    public static double getLeftMotorFrontCurrent(){
+        return leftMotorFront.getOutputCurrent();
+    }
+
+    public static double getLeftMotorMiddleCurrent(){
+        return leftMotorMiddle.getOutputCurrent();
+    }
+
+    public static double getLeftMotorBackCurrent(){
+        return leftMotorBack.getOutputCurrent();
+    }
 }
