@@ -17,7 +17,7 @@ public class TeleOp {
 	}
 	
 	public static void init(){
-		//Should init DriveTrain, Elevator etc.
+		
 
 	}
 	
