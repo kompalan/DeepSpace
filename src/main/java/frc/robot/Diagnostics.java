@@ -32,14 +32,14 @@ public class Diagnostics{
     }
 
     public static void pushDriveTrainDiagnostics(){
-        diagnosticTable.getEntry("dtRightFrontTemp").setDouble(DriveTrain.getRightMotorFrontTemp());
-        diagnosticTable.getEntry("dtRightMiddleTemp").setDouble(DriveTrain.getRightMotorMiddleTemp());
-        diagnosticTable.getEntry("dtRightBackTemp").setDouble(DriveTrain.getRightMotorBackTemp());
+        pushDouble("dtRightFrontTemp", DriveTrain.getRightMotorFrontTemp());
+        pushDouble("dtRightMiddleTemp", DriveTrain.getRightMotorMiddleTemp());
+        pushDouble("dtRightBackTemp", DriveTrain.getRightMotorBackTemp());
 
-        diagnosticTable.getEntry("dtLeftFrontTemp").setDouble(DriveTrain.getLeftMotorFrontTemp());
-        diagnosticTable.getEntry("dtLeftMiddleTemp").setDouble(DriveTrain.getLeftMotorMiddleTemp());
-        diagnosticTable.getEntry("dtLeftBackTemp").setDouble(DriveTrain.getLeftMotorBackTemp());
-
+        pushDouble("dtLeftFrontTemp", DriveTrain.getLeftMotorFrontTemp());
+        pushDouble("dtLeftMiddleTemp", DriveTrain.getLeftMotorMiddleTemp());
+        pushDouble("dtLeftBackTemp", DriveTrain.getLeftMotorBackTemp());
+        
         pushDouble("dtRightFrontCurrent",DriveTrain.getRightMotorFrontCurrent());
         pushDouble("dtRightMiddleCurrent",DriveTrain.getRightMotorMiddleCurrent());
         pushDouble("dtRightBackCurrent",DriveTrain.getRightMotorBackCurrent());
@@ -51,10 +51,11 @@ public class Diagnostics{
     }
 
     public static void pushIngestorDiagnostics(){
-        diagnosticTable.getEntry("cargoIngestorTemp").setDouble(Ingestor.getTempCargoIngestor());
-        diagnosticTable.getEntry("beltTemp").setDouble(Ingestor.getTempBelt());
         diagnosticTable.getEntry("beltAlive").setBoolean(Ingestor.isBeltTalonAlive());
         diagnosticTable.getEntry("cargoAlive").setBoolean(Ingestor.isCargoIngestorAlive());
+
+        pushDouble("cargoIngestorTemp", Ingestor.getTempCargoIngestor());
+        pushDouble("beltTemp", Ingestor.getTempBelt());
     }
 
     static void pushDouble(String name, double value){

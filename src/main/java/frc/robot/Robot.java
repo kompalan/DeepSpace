@@ -45,63 +45,12 @@ public class Robot extends TimedRobot{
   @Override
 	public void teleopInit(){
     //Starts Teleop 
-    //TeleOp.init();
+    TeleOp.init();
 	}
 
   @Override
   public void teleopPeriodic() {
-    //TeleOp.run();
-    Diagnostics.pushDriveTrainDiagnostics();
-    Diagnostics.pushElevatorDiagnostics();
-    Diagnostics.pushIngestorDiagnostics();
-    Ingestor.beltStop();
-    Ingestor.ingestCargo(0.0);
-    Elevator.setFrontHolderForward(0.0);
-    Elevator.setBackHolderForward(0.0);
-    if(manip.getLeftStickYAxis() < -0.1){
-      Ingestor.beltUp();
-      Ingestor.ingestCargo(-manip.getLeftStickYAxis());
-      Elevator.setFrontHolderForward(1);
-      Elevator.setBackHolderForward(1);
-    }else if(manip.getLeftStickYAxis() > 0.1){
-      Elevator.setFrontHolderForward(1);
-      Elevator.setBackHolderForward(-1);
-    }
-
-    if(Math.abs(manip.getRightStickYAxis()) > 0.1){
-      Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 1.2));
-    }
-
-    if(manip.getRightBumper()){
-      Elevator.setClawIn();
-    }else{
-      Elevator.setClawOut();
-    }
-
-    if(manip.getRightTriggerButton()){
-      Elevator.flipClawUp();
-    }else{
-      Elevator.flipClawDown();
-    }
-
-    if(manip.getLeftBumper()){
-      Ingestor.ingestorDown();
-    }else{
-      Ingestor.ingestorUp();
-    }
-
-		DriveTrain.arcadeDrive(
-      Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.2, 2), 
-      Utils.expoDeadzone(driver.getRightStickYAxis(), 0.2, 1.2)
-      );
-    
-    //System.out.printf("Left: %05f  Right: %05f\n" , driver.getLeftStickXAxis(),driver.getRightStickYAxis());    
-    if(driver.getRightBumper()){
-      DriveTrain.shiftUp();
-    }else{
-      DriveTrain.shiftDown();
-    }
-
+    TeleOp.run();
   }
 
   @Override

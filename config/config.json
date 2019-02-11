@@ -7,12 +7,14 @@
     "dtTalonLeftMiddle"  : 14, 
     "dtTalonLeftBack"    : 15, 
 
-    "ingestorTalonCargo" : 0, 
-    "ingestorTalonBelt"  : 0, 
+    "ingestorTalonCargo" : 10, 
+    "ingestorTalonBelt"  : 11, 
 
-    "ingestorBeltPower"  : 0.5, 
+    "ingestorBeltPower"  : -1, 
 
-    "elevatorSparkMax"   : 0, 
+    "elevatorSparkMaxLeft"   : 12,
+    "elevatorSparkMaxRight"  : 3,
+
     "elevatorkP"         : 5E-5,
     "elevatorkI"         : 1E-6,
     "elevatorkD"         : 0,
@@ -21,7 +23,37 @@
 
     "elevatorMaxOutput"  : 1.0, 
     "elevatorMinOutput" : -1.0, 
-    "solenoid45"         : [4, 5]
 
-    
+    "elevatorMaxRPM" : 5700,
+
+    "elevatorMaxVel" : 2000,
+    "elevatorMinVel" : 0, 
+
+    "elevatorMaxAcc" : 1500,
+    "elevatorMinAcc" : 0,
+
+    "elevatorAllowedErr" : 0, 
+
+    "elevatorSmartMotionSlot" : 0, 
+
+    "elevatorTalonCargoHolderFront" : 5, 
+    "elevatorTalonCargoHolderBack" : 6, 
+
+    "xboxPositionDriver" : 0, 
+    "xboxPositionManip" : 1, 
+
+    "dtkP" : 0.1,
+    "dtkI" : 1E-4, 
+    "dtkD" : 1, 
+    "dtkIz" : 0, 
+    "dtkFF" : 0, 
+    "dtkMaxOutput" : 1.0, 
+    "dtkMinOutput" : -1.0, 
+
+    "solenoidLHatchesClose" : 0, 
+    "solenoidLHatchesDeploy" : 1, 
+    "solenoidShifter" : 2, 
+    "solenoidRollerbar" : 3, 
+
+    "solenoid45"         : [4, 5]
 }

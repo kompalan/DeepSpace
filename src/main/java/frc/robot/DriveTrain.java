@@ -18,12 +18,6 @@ public class DriveTrain {
     private static Solenoid shifter;
 
     public static DriveTrain instance = null;
-    //public static Limelight limelight;
-
-    /**
-     * TODO: Move to config.json
-     */
-
 
     public static DriveTrain getInstance(){
         if(instance == null){
@@ -84,12 +78,7 @@ public class DriveTrain {
     }
 
     public static void arcadeDrive(double fwd, double tur) {
-        //Arcade Drive
-		if (Math.abs(tur) < .01)
-			tur = 0;
-		if (Math.abs(fwd) < .01)
-            fwd = 0;
-        
+        //Arcade Drive      
 		drive(Utils.ensureRange(fwd + tur, -1d, 1d), Utils.ensureRange(fwd - tur, -1d, 1d));
     }
 
