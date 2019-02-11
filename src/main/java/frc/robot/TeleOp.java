@@ -11,7 +11,6 @@ public class TeleOp {
 	}
 	
 	private TeleOp(){
-		//Should get Instance of  DriveTrain, Elevator, and other stuff
 		driver = new XBoxController(Constants.XBOX_DRIVER);
 		manip = new XBoxController(Constants.XBOX_MANIP);
 	}
