@@ -7,13 +7,9 @@
 
 package frc.robot;
 
-import frc.robot.XBoxController;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot{
-  
-  private static XBoxController manip, driver;
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
 
   @Override
@@ -22,13 +18,11 @@ public class Robot extends TimedRobot{
     // JSONConstants.populateMap();
     // JSONConstants.test();
 
-    //DriveTrain.getInstance();
+    DriveTrain.getInstance();
     TeleOp.getInstance();
     Elevator.getInstance();
     Ingestor.getInstance();
     Diagnostics.getInstance();
-    manip = new XBoxController(1);
-    driver = new XBoxController(0);
   }
 
   @Override
