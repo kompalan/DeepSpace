@@ -11,10 +11,15 @@ public class TeleOp {
 	}
 	
 	private TeleOp(){
-		//Should get Instance of  DriveTrain, Elevator, and other stuff
 		driver = new XBoxController(Constants.XBOX_DRIVER);
 		manip = new XBoxController(Constants.XBOX_MANIP);
 	}
+<<<<<<< HEAD
+=======
+	
+	public static void init(){
+		
+>>>>>>> 1caf19216e2363db2fab7cacac1f1d0b22065650
 
 	public static void init(){
 		// Diagnostics.pushDriveTrainDiagnostics();
@@ -118,6 +123,4 @@ public class TeleOp {
 		Diagnostics.pushElevatorDiagnostics();
 		Diagnostics.pushIngestorDiagnostics();
 	}
-	
-
 }
