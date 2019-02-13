@@ -14,12 +14,7 @@ public class TeleOp {
 		driver = new XBoxController(Constants.XBOX_DRIVER);
 		manip = new XBoxController(Constants.XBOX_MANIP);
 	}
-<<<<<<< HEAD
-=======
-	
-	public static void init(){
 		
->>>>>>> 1caf19216e2363db2fab7cacac1f1d0b22065650
 
 	public static void init(){
 		// Diagnostics.pushDriveTrainDiagnostics();
