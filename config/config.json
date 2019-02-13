@@ -7,6 +7,11 @@
     "dtTalonLeftMiddle"  : 14, 
     "dtTalonLeftBack"    : 15, 
 
+    "limelightVisionTarget"     : 1, 
+    "limelightLineupLineFront"  : 2, 
+    "limelightLineupLineMiddle" : 3, 
+    "limelightLineupLineBack"   : 4, 
+
     "ingestorTalonCargo" : 10, 
     "ingestorTalonBelt"  : 11, 
 
@@ -37,23 +42,24 @@
     "elevatorSmartMotionSlot" : 0, 
 
     "elevatorTalonCargoHolderFront" : 5, 
-    "elevatorTalonCargoHolderBack" : 6, 
+    "elevatorTalonCargoHolderBack"  : 6, 
 
     "xboxPositionDriver" : 0, 
-    "xboxPositionManip" : 1, 
+    "xboxPositionManip"  : 1, 
 
-    "dtkP" : 0.1,
-    "dtkI" : 1E-4, 
-    "dtkD" : 1, 
-    "dtkIz" : 0, 
-    "dtkFF" : 0, 
+    "dtkP"         : 0.1,
+    "dtkI"         : 1E-4, 
+    "dtkD"         : 1, 
+    "dtkIz"        : 0, 
+    "dtkFF"        : 0, 
     "dtkMaxOutput" : 1.0, 
     "dtkMinOutput" : -1.0, 
 
-    "solenoidLHatchesClose" : 0, 
+    "solenoidLHatchesClose"  : 0, 
     "solenoidLHatchesDeploy" : 1, 
-    "solenoidShifter" : 2, 
-    "solenoidRollerbar" : 3, 
+    "solenoidShifter"        : 2, 
+    "solenoidRollerbar"      : 3, 
 
-    "solenoid45"         : [4, 5]
+    "solenoid4" : 4,
+    "solenoid5" : 5
 }

@@ -58,6 +58,10 @@ public class Ingestor{
         ingestor.set(false);
     }
 
+    public static boolean isIngestorUp(){
+        return ingestor.get();
+    }
+
     //Diagnostic Information
     public static boolean isCargoIngestorAlive(){
         return (cargoIngestorTalon.getBusVoltage() != 0.0);

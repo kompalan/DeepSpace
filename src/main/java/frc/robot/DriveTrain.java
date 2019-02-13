@@ -6,16 +6,19 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import com.revrobotics.ControlType;
 
-public class DriveTrain {
+public class DriveTrain implements PIDOutput{
     private static CANSparkMax rightMotorFront, rightMotorMiddle, rightMotorBack, leftMotorFront, leftMotorMiddle, leftMotorBack;
     private static CANPIDController pidControllerLeftFront, pidControllerRightFront;
     private static CANEncoder encoderLeftFront, encoderRightFront;
     private static AHRS hyro;
     private static Solenoid shifter;
+    private static PIDController hyropid;
 
     public static DriveTrain instance = null;
 
@@ -41,6 +44,10 @@ public class DriveTrain {
         leftMotorBack = new CANSparkMax(Constants.DT_TALON_LEFTBACK, MotorType.kBrushless);
 
         hyro = new AHRS(SPI.Port.kMXP);
+        hyropid = new PIDController(0, 0, 0, hyro, this);
+
+        hyropid.setInputRange(-180d, 180d);
+        hyropid.setOutputRange(-1.0, 1.0);
 
         shifter = new Solenoid(Constants.SOLENOID_SHIFTER);
         
@@ -70,6 +77,8 @@ public class DriveTrain {
         
         leftMotorMiddle.follow(leftMotorFront);
         leftMotorBack.follow(leftMotorFront);
+
+
     }
 
     public static void drive(double powerLeft, double powerRight){
@@ -82,6 +91,36 @@ public class DriveTrain {
 		drive(Utils.ensureRange(fwd + tur, -1d, 1d), Utils.ensureRange(fwd - tur, -1d, 1d));
     }
 
+    public static double getAHRS(){
+        return hyro.getAngle();
+    }
+
+    public static void turnToAngle(double angle){
+		hyropid.setSetpoint(angle);
+		if(!hyropid.isEnabled()){
+			System.out.println("PID Enabled");
+			hyropid.reset();
+			hyropid.enable();
+		}
+    }
+    
+	@Override
+	public void pidWrite(double output) {
+		// TODO Auto-generated method stub
+		if (Math.abs(hyropid.getError()) < 5d) {
+			hyropid.setPID(hyropid.getP(), .001, 0);
+		} else {
+			// I Zone
+			hyropid.setPID(hyropid.getP(), 0, 0);
+        }
+        
+		drive(output, -output);
+	}
+
+    public static void pidDisable(){
+        hyropid.disable();
+    }
+
     public static void shiftUp(){
         shifter.set(true);
     }
@@ -90,12 +129,28 @@ public class DriveTrain {
         shifter.set(false);
     }
 
+    public static boolean getShifted(){
+        return shifter.get();
+    }
+
     public static double getEncoderRight(){
         return encoderRightFront.getPosition();
     }
 
     public static double getEncoderLeft(){
         return encoderLeftFront.getPosition();
+    }
+
+    public static double getVelocityRight(){
+        return encoderRightFront.getVelocity();
+    }
+
+    public static double getVelocityLeft(){
+        return encoderLeftFront.getVelocity();
+    }
+
+    public static double getAvgVelocity(){
+        return (DriveTrain.getVelocityLeft() + DriveTrain.getVelocityRight()) / 2;
     }
 
     //Diagnostics

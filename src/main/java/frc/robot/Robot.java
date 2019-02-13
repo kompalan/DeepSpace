@@ -22,7 +22,7 @@ public class Robot extends TimedRobot{
     // JSONConstants.populateMap();
     // JSONConstants.test();
 
-    DriveTrain.getInstance();
+    //DriveTrain.getInstance();
     TeleOp.getInstance();
     Elevator.getInstance();
     Ingestor.getInstance();
@@ -55,7 +55,7 @@ public class Robot extends TimedRobot{
 
   @Override
   public void disabledPeriodic(){
-    Diagnostics.pushDriveTrainDiagnostics();
+    //Diagnostics.pushDriveTrainDiagnostics();
     Diagnostics.pushElevatorDiagnostics();
     Diagnostics.pushIngestorDiagnostics();
   }

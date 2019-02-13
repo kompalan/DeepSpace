@@ -85,6 +85,10 @@ import edu.wpi.first.wpilibj.Solenoid;
         lHatchesFlip.set(true);
     }
 
+    public static boolean getFlipped(){
+        return lHatchesFlip.get();
+    }
+
     public static void flipClawDown(){
         lHatchesFlip.set(false);
     }
@@ -122,5 +126,13 @@ import edu.wpi.first.wpilibj.Solenoid;
     }
     public static double getRightMotorTemperature(){
         return elevatorSparkRight.getMotorTemperature();
+    }
+
+    public static double getPercentOutput(){
+        return elevatorSparkRight.getAppliedOutput();
+    }
+
+    public static double getVelocity(){
+        return elevatorEncoder.getVelocity();
     }
  }

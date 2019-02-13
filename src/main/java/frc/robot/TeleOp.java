@@ -15,28 +15,37 @@ public class TeleOp {
 		driver = new XBoxController(Constants.XBOX_DRIVER);
 		manip = new XBoxController(Constants.XBOX_MANIP);
 	}
-	
+
 	public static void init(){
-		//Should init DriveTrain, Elevator etc.
-
+		// Diagnostics.pushDriveTrainDiagnostics();
+		// Diagnostics.pushElevatorDiagnostics();
+		// Diagnostics.pushIngestorDiagnostics();
+		
 	}
-	
+
 	public static void run(){
-
 		//Controller Mappings Here (see picture)
-		Diagnostics.pushDriveTrainDiagnostics();
-		Diagnostics.pushElevatorDiagnostics();
-		Diagnostics.pushIngestorDiagnostics();
-
 		DriveTrain.arcadeDrive(
-			Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 1.2), 
-			Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 2)
+			Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2), 
+			Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
 		);
+
+		if(DriveTrain.getAvgVelocity() > 50000d){
+			DriveTrain.shiftUp();
+		}else{
+			DriveTrain.shiftDown();
+		}
 
 		if(driver.getRightBumper()){
 			DriveTrain.shiftUp();
 		}else{
 			DriveTrain.shiftDown();
+		}
+
+		if(driver.getLeftBumper()){
+			Limelight.dock();
+		}else{
+			DriveTrain.pidDisable();
 		}
 		
 		if(manip.getLeftStickYAxis() < -0.1){
@@ -54,9 +63,8 @@ public class TeleOp {
 			Elevator.setBackHolderForward(0.0);
 		}
 	
-		if(Math.abs(manip.getRightStickYAxis()) > 0.1){
-			Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 1.2));
-		}
+		Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 1.2));
+		
 	
 		if(manip.getRightBumper()){
 			Elevator.setClawIn();
@@ -65,9 +73,11 @@ public class TeleOp {
 		}
 	
 		if(manip.getRightTriggerButton()){
-			Elevator.flipClawUp();
-		}else{
-			Elevator.flipClawDown();
+			if(Elevator.getFlipped()){
+				Elevator.flipClawDown();
+			}else{
+				Elevator.flipClawUp();
+			}
 		}
 	
 		if(manip.getLeftBumper()){
@@ -76,16 +86,38 @@ public class TeleOp {
 			Ingestor.ingestorUp();
 		}
 		
-		//System.out.printf("Left: %05f  Right: %05f\n" , driver.getLeftStickXAxis(),driver.getRightStickYAxis());    
 		if(manip.getLeftBumper() && (manip.getRightStickYAxis() > 0.1 || manip.getRightStickYAxis() < -0.1)){
 			Ingestor.beltUp();
 			if(Math.abs(manip.getRightStickYAxis()) > 0.1){
 				Ingestor.ingestCargo(manip.getRightStickYAxis());
 			}
+		}
+
+		if(Limelight.hasValidTargets()){
+			if(driver.getRightBumper()){
+				Limelight.lineUp();
+				if(Limelight.getX() == 0){
+					driver.setLeftRumble(0.0);
+					driver.setRightRumble(0.0);
+				}
+			}else if(driver.getLeftBumper()){
+				Limelight.dock();
+			}else{
+				DriveTrain.pidDisable();
+				DriveTrain.arcadeDrive(-driver.getRightStickYAxis(), driver.getLeftStickXAxis());
+			}
+			
 		}else{
-			if(manip.getRightStickYAxis() > 0.1 || manip.getRightStickYAxis() < -0.1){
-				Elevator.setPower(-manip.getRightStickYAxis());
+			DriveTrain.pidDisable();
+			Limelight.changePipeline(3);
+
+			if(driver.getLeftBumper()){
+				DriveTrain.drive(-.3,-.3);
 			}
 		}
+		Diagnostics.pushElevatorDiagnostics();
+		Diagnostics.pushIngestorDiagnostics();
 	}
+	
+
 }

@@ -14,9 +14,18 @@ public class Utils {
 			return 1.0;
 		} else {
 			return v;
-		}
-			
-				
+		}	
+	}
+
+	public static double addAngle(double ang1, double ang2){
+		return Math.acos(Math.cos(ang1)*Math.cos(ang2));
+	}
+	public static double distFrom(double tx, double ty){
+		return Constants.CAMERA_HEIGHT*Math.tan(addAngle(tx,Math.min(ty+Constants.CAMERA_ANGLE,1.57)));
+
+	}
+	public static double degToRad(double deg){
+		return deg*Math.PI/180.0;
 	}
 
 	public static double inchesToEncs(double inches){
