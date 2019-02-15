@@ -23,6 +23,7 @@ public class Robot extends TimedRobot{
     Elevator.getInstance();
     Ingestor.getInstance();
     Diagnostics.getInstance();
+    LEDs.getInstance();
   }
 
   @Override
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot{
 
   @Override
   public void disabledPeriodic(){
-    //Diagnostics.pushDriveTrainDiagnostics();
+    Diagnostics.pushDriveTrainDiagnostics();
     Diagnostics.pushElevatorDiagnostics();
     Diagnostics.pushIngestorDiagnostics();
   }

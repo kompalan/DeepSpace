@@ -38,7 +38,7 @@ public class Utils {
 		if(Math.abs(input)<=deadzone)
 			return 0;
 		double deadzoned = (input - Math.signum(input) * deadzone)/(1-deadzone);
-		System.out.println(deadzoned);
+		//System.out.println(deadzoned);
 		double expoed = Math.pow(Math.abs(deadzoned), exponent) * Math.signum(deadzoned);
 
 		return expoed;

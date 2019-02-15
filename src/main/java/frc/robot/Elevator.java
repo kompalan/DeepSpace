@@ -65,8 +65,12 @@ import edu.wpi.first.wpilibj.Solenoid;
         elevatorSparkLeft.follow(elevatorSparkRight, true);
     }
 
-    public static void setPosition(int elevatorPosition){
+    public static void setPosition(double elevatorPosition){
         elevatorPIDController.setReference(elevatorPosition, ControlType.kSmartMotion);
+    }
+
+    public static void stallElevator(){
+        elevatorPIDController.setReference(elevatorEncoder.getPosition(), ControlType.kPosition);
     }
 
     public static double getPosition(){
@@ -93,24 +97,14 @@ import edu.wpi.first.wpilibj.Solenoid;
         lHatchesFlip.set(false);
     }
 
-    public static void setFrontHolderForward(double power){
+    public static void setFrontHolderPower(double power){
         cargoHolderFront.set(ControlMode.PercentOutput, power);
     }
-
-    public static void setFrontHolderBackward(double power){
-        cargoHolderFront.set(ControlMode.PercentOutput, -power);
-    }
-
-    public static void setBackHolderForward(double power){
+    public static void setBackHolderPower(double power){
         cargoHolderBack.set(ControlMode.PercentOutput, power);
-    }
-
-    public static void setBackHolderBackward(double power){
-        cargoHolderBack.set(ControlMode.PercentOutput, -power);
     }
     
     //Diagnostic Information
-
     public static void setPower(double power){
         elevatorPIDController.setReference(power, ControlType.kDutyCycle);
     }
@@ -134,5 +128,77 @@ import edu.wpi.first.wpilibj.Solenoid;
 
     public static double getVelocity(){
         return elevatorEncoder.getVelocity();
+    }
+
+    //FOR TESTING PURPOSES ONLY!! REMOVE BEFORE COMP
+    public static void setElevatorPID(double kP, double kI, double kD, double kFF, double kIz, double kMinOut, double kMaxOut){
+        elevatorPIDController.setP(kP);
+        elevatorPIDController.setI(kI);
+        elevatorPIDController.setD(kD);
+        elevatorPIDController.setFF(kFF);
+        elevatorPIDController.setIZone(kIz);
+        elevatorPIDController.setOutputRange(kMinOut, kMaxOut);
+    }
+
+    public static void setElevatorSmartMotion(double minVel, double maxVel, double minAcc, double maxAcc, double allowedErr){
+        elevatorPIDController.setSmartMotionMaxVelocity(maxVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
+        elevatorPIDController.setSmartMotionMinOutputVelocity(minVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
+        elevatorPIDController.setSmartMotionMaxAccel(maxAcc, Constants.ELEVATOR_SMART_MOTION_SLOT);
+        elevatorPIDController.setSmartMotionAllowedClosedLoopError(allowedErr, Constants.ELEVATOR_SMART_MOTION_SLOT);
+    }
+
+    public static void setELEVATOR_P(double kP){
+        elevatorPIDController.setP(kP);
+
+    }
+
+    public static void setELEVATOR_I(double kI){
+        elevatorPIDController.setI(kI);
+
+    }
+
+    public static void setELEVATOR_D(double kD){
+        elevatorPIDController.setD(kD);
+
+    }
+
+    public static void setELEVATOR_FF(double kFF){
+        elevatorPIDController.setFF(kFF);
+
+    }
+
+    public static void setELEVATOR_IZ(double kIZ){
+        elevatorPIDController.setIZone(kIZ);
+    }
+
+    public static void setELEVATOR_KOUTPUT(double kMinOut, double kMaxOut){
+        elevatorPIDController.setOutputRange(kMinOut, kMaxOut);
+
+    }
+
+    public static void setELEVATOR_MAXVEL(double maxVel){
+        elevatorPIDController.setSmartMotionMaxVelocity(maxVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
+
+    }
+
+    public static void setELEVATOR_MINVEL(double minVel){
+        elevatorPIDController.setSmartMotionMinOutputVelocity(minVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
+
+    }
+
+    public static void setELEVATOR_MAXACC(double maxAcc){
+        elevatorPIDController.setSmartMotionMaxAccel(maxAcc, Constants.ELEVATOR_SMART_MOTION_SLOT);
+    }
+
+    public static void setELEVATOR_MAXERR(double maxerr){
+        elevatorPIDController.setSmartMotionAllowedClosedLoopError(maxerr, Constants.ELEVATOR_SMART_MOTION_SLOT);
+    }
+
+    public static double getElevatorEncoder(){
+        return elevatorEncoder.getPosition();
+    }
+
+    public static void setElevatorEncoder(){
+        elevatorPIDController.setReference(5.00, ControlType.kPosition);
     }
  }

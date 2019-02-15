@@ -31,6 +31,7 @@ public class Diagnostics{
         pushDouble("elRightCurrent",Elevator.getRightMotorCurrent());
         pushDouble("percentElevator", Elevator.getPercentOutput());
         pushDouble("velElevator", Elevator.getVelocity());
+        pushDouble("posElevator", Elevator.getPosition());
     }
 
     public static void pushDriveTrainDiagnostics(){
@@ -49,6 +50,8 @@ public class Diagnostics{
         pushDouble("dtLeftFrontCurrent",DriveTrain.getLeftMotorFrontCurrent());
         pushDouble("dtLeftMiddleCurrent",DriveTrain.getLeftMotorMiddleCurrent());
         pushDouble("dtLeftBackCurrent",DriveTrain.getLeftMotorBackCurrent());
+        pushDouble("dtVelocity", DriveTrain.getAvgVelocity());
+        
     }
 
     public static void pushIngestorDiagnostics(){

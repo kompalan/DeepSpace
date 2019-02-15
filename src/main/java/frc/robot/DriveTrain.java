@@ -19,7 +19,6 @@ public class DriveTrain implements PIDOutput{
     private static AHRS hyro;
     private static Solenoid shifter;
     private static PIDController hyropid;
-
     public static DriveTrain instance = null;
 
     public static DriveTrain getInstance(){
@@ -44,10 +43,12 @@ public class DriveTrain implements PIDOutput{
         leftMotorBack = new CANSparkMax(Constants.DT_TALON_LEFTBACK, MotorType.kBrushless);
 
         hyro = new AHRS(SPI.Port.kMXP);
-        hyropid = new PIDController(0, 0, 0, hyro, this);
-
+        hyropid = new PIDController(1, 0, 0, hyro, this);
         hyropid.setInputRange(-180d, 180d);
         hyropid.setOutputRange(-1.0, 1.0);
+
+        hyropid.setAbsoluteTolerance(2d);
+        hyropid.setContinuous(true);
 
         shifter = new Solenoid(Constants.SOLENOID_SHIFTER);
         
@@ -86,6 +87,11 @@ public class DriveTrain implements PIDOutput{
         pidControllerLeftFront.setReference(powerLeft, ControlType.kDutyCycle);
     }
 
+    public static void drivePower(double powerLeft, double powerRight){
+        rightMotorFront.set(powerRight);
+        leftMotorFront.set(powerLeft);
+    }
+
     public static void arcadeDrive(double fwd, double tur) {
         //Arcade Drive      
 		drive(Utils.ensureRange(fwd + tur, -1d, 1d), Utils.ensureRange(fwd - tur, -1d, 1d));
@@ -93,32 +99,6 @@ public class DriveTrain implements PIDOutput{
 
     public static double getAHRS(){
         return hyro.getAngle();
-    }
-
-    public static void turnToAngle(double angle){
-		hyropid.setSetpoint(angle);
-		if(!hyropid.isEnabled()){
-			System.out.println("PID Enabled");
-			hyropid.reset();
-			hyropid.enable();
-		}
-    }
-    
-	@Override
-	public void pidWrite(double output) {
-		// TODO Auto-generated method stub
-		if (Math.abs(hyropid.getError()) < 5d) {
-			hyropid.setPID(hyropid.getP(), .001, 0);
-		} else {
-			// I Zone
-			hyropid.setPID(hyropid.getP(), 0, 0);
-        }
-        
-		drive(output, -output);
-	}
-
-    public static void pidDisable(){
-        hyropid.disable();
     }
 
     public static void shiftUp(){
@@ -142,7 +122,7 @@ public class DriveTrain implements PIDOutput{
     }
 
     public static double getVelocityRight(){
-        return encoderRightFront.getVelocity();
+        return encoderLeftFront.getVelocity();
     }
 
     public static double getVelocityLeft(){
@@ -150,7 +130,45 @@ public class DriveTrain implements PIDOutput{
     }
 
     public static double getAvgVelocity(){
-        return (DriveTrain.getVelocityLeft() + DriveTrain.getVelocityRight()) / 2;
+        //System.out.println("LEFT: " + encoderLeftFront.getVelocity());
+        return (encoderLeftFront.getVelocity());
+    }
+
+    public static void turnToAngle(double angle){
+		hyropid.setSetpoint(angle);
+		if(!hyropid.isEnabled()){
+			System.out.println("PID Enabled");
+			hyropid.reset();
+			hyropid.enable();
+		}	
+    }
+    
+	@Override
+	public void pidWrite(double output) {
+		// TODO Auto-generated method stub
+		if (Math.abs(hyropid.getError()) < 5d) {
+			hyropid.setPID(hyropid.getP(), .001, 0);
+		} else {
+			// I Zone
+			hyropid.setPID(hyropid.getP(), 0, 0);
+        }
+
+        
+        // if(output != 0){
+        DriveTrain.arcadeDrive(output, 0);
+        // }
+	}
+
+    public static void pidDisable(){
+        System.out.println("PID Disabled");
+        hyropid.disable();
+    }
+
+    public static void pidEnable(){
+        hyropid.enable();
+    }
+    public static boolean ispidEnabled(){
+        return hyropid.isEnabled();
     }
 
     //Diagnostics
