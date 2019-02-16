@@ -37,25 +37,26 @@ public class Constants {
 	public static int ELEVATOR_SPARKMAX_RIGHT = 3;
 
 
-	public static double ELEVATOR_kP = 1;
+	public static double ELEVATOR_kP = 0.00025;
 	public static double ELEVATOR_kI = 0;
-	public static double ELEVATOR_kD = 0;
-	public static double ELEVATOR_kFF = 0;
+	public static double ELEVATOR_kD = 5;
+	public static double ELEVATOR_kFF = 0.00025;
 	public static double ELEVATOR_kIZ = 0;
 
-	public static double ELEVATOR_MAX_OUTPUT = 1.0;
-	public static double ELEVATOR_MIN_OUTPUT = -1.0;
+	public static double ELEVATOR_MAX_OUTPUT = 1;
+	public static double ELEVATOR_MIN_OUTPUT = -1;
 
 	public static double ELEVATOR_MAX_RPM = 5700;
 
-	public static double ELEVATOR_MAX_VEL = 2000;
-	public static double ELEVATOR_MIN_VEL = 0;
+	public static double ELEVATOR_MAX_VEL = 50;
+	public static double ELEVATOR_MIN_VEL = -50;
 
-	public static double ELEVATOR_MAX_ACC = 1500;
-	public static double ELEVATOR_MIN_ACC = 0;
+	public static double ELEVATOR_MAX_ACC = 100;
+	public static double ELEVATOR_MIN_ACC = -100;
 
+	public static double ELEVATOR_ARB_FEED_FORWARD = 1.35;
 	
-	public static  double ELEVATOR_ALLOWED_ERR = 0;
+	public static  double ELEVATOR_ALLOWED_ERR = 1;
 
 	public static final int ELEVATOR_SMART_MOTION_SLOT = 0;
 
@@ -91,5 +92,14 @@ public class Constants {
 	public static final double LIMELIGHT_P = 0.001;
 	public static final double LIMELIGHT_I = 0;
 	public static final double LIMELIGHT_D = 0;
+
+
+	public static final double ELEVATOR_SETPOINT_ROCKET_LOW = 13;
+	public static final double ELEVATOR_SETPOINT_ROCKET_MIDDLE = 14;
+	public static final double ELEVATOR_SETPOINT_ROCKET_HIGH = 15;
+	
+
+	public static final double CARGO_SHIP_SETPOINT_HATCH = 13;
+	public static final double CARGO_SHIP_SETPOINT_CARGO = 14;
 }
 

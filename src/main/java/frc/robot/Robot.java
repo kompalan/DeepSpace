@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot{
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
@@ -24,6 +25,8 @@ public class Robot extends TimedRobot{
     Ingestor.getInstance();
     Diagnostics.getInstance();
     LEDs.getInstance();
+
+    
   }
 
   @Override
@@ -50,8 +53,6 @@ public class Robot extends TimedRobot{
 
   @Override
   public void disabledPeriodic(){
-    Diagnostics.pushDriveTrainDiagnostics();
-    Diagnostics.pushElevatorDiagnostics();
-    Diagnostics.pushIngestorDiagnostics();
+    LEDs.setNeutral();
   }
 }

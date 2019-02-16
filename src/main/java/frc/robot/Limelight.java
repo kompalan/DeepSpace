@@ -68,10 +68,10 @@ public class Limelight {
 		double power = x * 0.03;
 		if(Limelight.getX() >= 5d || Limelight.getX() <= -5d){
 			if(Limelight.getX() > 5){
-				System.out.println("Should Be Moving Right");
+			//	System.out.println("Should Be Moving Right");
 				DriveTrain.arcadeDrive(power, 0);
 			}else if(Limelight.getX() < -5){
-				System.out.println("Should Be Moving Left");
+			//	System.out.println("Should Be Moving Left");
 				DriveTrain.arcadeDrive(-power, 0);
 				
 			}

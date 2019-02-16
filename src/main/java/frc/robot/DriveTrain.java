@@ -20,7 +20,7 @@ public class DriveTrain implements PIDOutput{
     private static Solenoid shifter;
     private static PIDController hyropid;
     public static DriveTrain instance = null;
-
+    
     public static DriveTrain getInstance(){
         if(instance == null){
             instance = new DriveTrain();

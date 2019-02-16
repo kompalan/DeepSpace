@@ -25,4 +25,10 @@ public class LEDs {
     public static void setLime(){
         leds.set(0.73);
     }
+
+    public static void setNeutral(){
+        leds.set(-0.99);
+    }
+
+
 }
