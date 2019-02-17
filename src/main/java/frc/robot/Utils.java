@@ -28,11 +28,6 @@ public class Utils {
 		return deg*Math.PI/180.0;
 	}
 
-	public static double inchesToEncs(double inches){
-		//Based on wheel circumfrence, perform calculation for inches.
-		return inches;
-	}
-
 	public static double expoDeadzone(double input, double deadzone, double exponent){
 		//http://www.mimirgames.com/articles/games/joystick-input-and-using-deadbands/
 		if(Math.abs(input)<=deadzone)

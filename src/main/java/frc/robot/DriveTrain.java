@@ -6,7 +6,6 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -18,7 +17,7 @@ public class DriveTrain implements PIDOutput{
     private static CANEncoder encoderLeftFront, encoderRightFront;
     private static AHRS hyro;
     private static Solenoid shifter;
-    private static PIDController hyropid;
+    private static AnuragPIDController hyropid;
     public static DriveTrain instance = null;
     
     public static DriveTrain getInstance(){
@@ -43,7 +42,7 @@ public class DriveTrain implements PIDOutput{
         leftMotorBack = new CANSparkMax(Constants.DT_TALON_LEFTBACK, MotorType.kBrushless);
 
         hyro = new AHRS(SPI.Port.kMXP);
-        hyropid = new PIDController(1, 0, 0, hyro, this);
+        hyropid = new AnuragPIDController(1, 0, 0, hyro, this);
         hyropid.setInputRange(-180d, 180d);
         hyropid.setOutputRange(-1.0, 1.0);
 
@@ -130,8 +129,7 @@ public class DriveTrain implements PIDOutput{
     }
 
     public static double getAvgVelocity(){
-        //System.out.println("LEFT: " + encoderLeftFront.getVelocity());
-        return (encoderLeftFront.getVelocity());
+        return encoderLeftFront.getVelocity();
     }
 
     public static void turnToAngle(double angle){
@@ -145,18 +143,13 @@ public class DriveTrain implements PIDOutput{
     
 	@Override
 	public void pidWrite(double output) {
-		// TODO Auto-generated method stub
 		if (Math.abs(hyropid.getError()) < 5d) {
 			hyropid.setPID(hyropid.getP(), .001, 0);
 		} else {
 			// I Zone
 			hyropid.setPID(hyropid.getP(), 0, 0);
         }
-
-        
-        // if(output != 0){
         DriveTrain.arcadeDrive(output, 0);
-        // }
 	}
 
     public static void pidDisable(){

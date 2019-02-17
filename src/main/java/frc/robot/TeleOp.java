@@ -8,8 +8,6 @@ public class TeleOp {
 	private static XBoxController manip;
 	private static XBoxController driver;
 	private static TeleOp instance;
-	private static double[] rocketSetpoints = {100.0, 200.0, 300.0};
-	private static int currentSetpoint = 0;
 	private static Timer clock;
 	private static boolean wasStartPressed = false;
 
