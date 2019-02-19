@@ -68,10 +68,12 @@ import edu.wpi.first.wpilibj.Solenoid;
         elevatorEncoder.setVelocityConversionFactor((12.0/56.0)*2.5*Math.PI/60);
         elevatorSparkLeft.setSmartCurrentLimit(70);
         elevatorSparkRight.setSmartCurrentLimit(70);
+
+        elevatorPIDController.setOutputRange(-0.7, 0.7);
     }
 
     public static void setPosition(double elevatorPosition){
-        elevatorPIDController.setReference(elevatorPosition, ControlType.kSmartMotion, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
+        elevatorPIDController.setReference(elevatorPosition, ControlType.kPosition, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
         Elevator.setPosition = elevatorPosition;
     }
 

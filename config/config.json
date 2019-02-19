@@ -61,5 +61,13 @@
     "solenoidRollerbar"      : 3, 
 
     "solenoid4" : 4,
-    "solenoid5" : 5
+    "solenoid5" : 5, 
+
+    "maxRPMFirstGear" : 4700.0, 
+    
+    "xboxDriver" : 0, 
+    "xboxManip" : 1, 
+
+    "ledChannel" : 1, 
+    
 }

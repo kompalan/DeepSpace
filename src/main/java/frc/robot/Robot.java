@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot{
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
-
+  private static XBoxController manip;
   @Override
   public void robotInit() {
     // JSONConstants.setFilePath(this.ROBOT_FILE_PATH);
@@ -25,12 +25,12 @@ public class Robot extends TimedRobot{
     Diagnostics.getInstance();
     LEDs.getInstance();
 
-    
+    TeleOp.init();
   }
 
   @Override
   public void autonomousInit() {
-    TeleOp.init();
+
   }
 
 
@@ -42,7 +42,7 @@ public class Robot extends TimedRobot{
   @Override
 	public void teleopInit(){
     //Starts Teleop 
-    TeleOp.init();
+    
 	}
 
   @Override
@@ -53,5 +53,7 @@ public class Robot extends TimedRobot{
   @Override
   public void disabledPeriodic(){
     LEDs.setNeutral();
+    //DriveTrain.pidDisable();
+    //Limelight.dumbLineup();
   }
 }

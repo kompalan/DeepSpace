@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class DriveTrain implements PIDOutput{
     private static CANSparkMax rightMotorFront, rightMotorMiddle, rightMotorBack, leftMotorFront, leftMotorMiddle, leftMotorBack;
@@ -36,29 +37,33 @@ public class DriveTrain implements PIDOutput{
         rightMotorMiddle = new CANSparkMax(Constants.DT_TALON_RIGHTMIDDLE, MotorType.kBrushless);
         rightMotorBack = new CANSparkMax(Constants.DT_TALON_RIGHTBACK, MotorType.kBrushless);
 
-
+        //Left SPARK Motor
         leftMotorFront = new CANSparkMax(Constants.DT_TALON_LEFTFRONT, MotorType.kBrushless);
         leftMotorMiddle = new CANSparkMax(Constants.DT_TALON_LEFTMIDDLE, MotorType.kBrushless);
         leftMotorBack = new CANSparkMax(Constants.DT_TALON_LEFTBACK, MotorType.kBrushless);
 
+        //Gyro Instantiation Plus PID
         hyro = new AHRS(SPI.Port.kMXP);
-        hyropid = new AnuragPIDController(1, 0, 0, hyro, this);
+        hyropid = new AnuragPIDController(Constants.LIMELIGHT_P, Constants.LIMELIGHT_I, Constants.LIMELIGHT_D, hyro, this);
         hyropid.setInputRange(-180d, 180d);
         hyropid.setOutputRange(-1.0, 1.0);
 
         hyropid.setAbsoluteTolerance(2d);
         hyropid.setContinuous(true);
 
+        //Shifter
         shifter = new Solenoid(Constants.SOLENOID_SHIFTER);
         
+        //PIDController for SparkMax
         pidControllerRightFront = rightMotorFront.getPIDController();
         pidControllerLeftFront = leftMotorFront.getPIDController();
         
 
+        //Getting Encoders for SparkMax
         encoderRightFront = rightMotorFront.getEncoder();
         encoderLeftFront = leftMotorFront.getEncoder();
 
-
+        //Setting P, I, D in to SparkMaxes
         pidControllerRightFront.setP(Constants.kP);
         pidControllerRightFront.setI(Constants.kI);
         pidControllerRightFront.setD(Constants.kD);
@@ -71,24 +76,20 @@ public class DriveTrain implements PIDOutput{
 
         pidControllerLeftFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
         pidControllerRightFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
-
+        DriveTrain.setAllCoast();
+        
         rightMotorMiddle.follow(rightMotorFront);
         rightMotorBack.follow(rightMotorFront);
         
         leftMotorMiddle.follow(leftMotorFront);
         leftMotorBack.follow(leftMotorFront);
 
-
+        
     }
 
     public static void drive(double powerLeft, double powerRight){
         pidControllerRightFront.setReference(powerRight, ControlType.kDutyCycle);
         pidControllerLeftFront.setReference(powerLeft, ControlType.kDutyCycle);
-    }
-
-    public static void drivePower(double powerLeft, double powerRight){
-        rightMotorFront.set(powerRight);
-        leftMotorFront.set(powerLeft);
     }
 
     public static void arcadeDrive(double fwd, double tur) {
@@ -108,6 +109,25 @@ public class DriveTrain implements PIDOutput{
         shifter.set(false);
     }
 
+    public static void setAllCoast(){
+        rightMotorFront.setIdleMode(IdleMode.kCoast);
+        rightMotorMiddle.setIdleMode(IdleMode.kCoast);
+        rightMotorBack.setIdleMode(IdleMode.kCoast);
+
+        leftMotorFront.setIdleMode(IdleMode.kCoast);
+        leftMotorMiddle.setIdleMode(IdleMode.kCoast);
+        leftMotorBack.setIdleMode(IdleMode.kCoast);
+    }
+
+    public static void setAllBreak(){
+        rightMotorFront.setIdleMode(IdleMode.kBrake);
+        rightMotorMiddle.setIdleMode(IdleMode.kBrake);
+        rightMotorBack.setIdleMode(IdleMode.kBrake);
+
+        leftMotorFront.setIdleMode(IdleMode.kBrake);
+        leftMotorMiddle.setIdleMode(IdleMode.kBrake);
+        leftMotorBack.setIdleMode(IdleMode.kBrake);
+    }
     public static boolean getShifted(){
         return shifter.get();
     }
@@ -132,17 +152,20 @@ public class DriveTrain implements PIDOutput{
         return encoderLeftFront.getVelocity();
     }
 
+    //Turn To Angle
     public static void turnToAngle(double angle){
 		hyropid.setSetpoint(angle);
 		if(!hyropid.isEnabled()){
-			System.out.println("PID Enabled");
+			//System.out.println("PID Enabled");
 			hyropid.reset();
 			hyropid.enable();
 		}	
     }
     
+    
 	@Override
 	public void pidWrite(double output) {
+        System.out.println("PID Wrote " + output);
 		if (Math.abs(hyropid.getError()) < 5d) {
 			hyropid.setPID(hyropid.getP(), .001, 0);
 		} else {
@@ -160,6 +183,7 @@ public class DriveTrain implements PIDOutput{
     public static void pidEnable(){
         hyropid.enable();
     }
+
     public static boolean ispidEnabled(){
         return hyropid.isEnabled();
     }
@@ -167,6 +191,11 @@ public class DriveTrain implements PIDOutput{
     //Diagnostics
     public static double getRightMotorFrontTemp(){
         return rightMotorFront.getMotorTemperature();
+    }
+
+    public static double getPIDError(){
+        System.out.println("ERROR: " + hyropid.getError());
+        return hyropid.getError();
     }
 
     public static double getRightMotorMiddleTemp(){
@@ -211,4 +240,10 @@ public class DriveTrain implements PIDOutput{
     public static double getLeftMotorBackCurrent(){
         return leftMotorBack.getOutputCurrent();
     }
+
+    public static void driveStraight(double power){
+		//DriveTrain.drive(power * Constants.DRIVE_STRAIGHT_CONSTANT, -power);
+        Limelight.PID(DriveTrain.getAHRS());
+        DriveTrain.arcadeDrive(power, Limelight.output);
+	}
 }

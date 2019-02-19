@@ -19,17 +19,18 @@ public class Constants {
 	public static final int LIMELIGHT_LINEUP_LINE_MIDDLE = 3;
 	public static final int LIMELIGHT_LINEUP_LINE_BACK = 4;
 
-	public static final double CAMERA_ANGLE = 15.0;
-	public static final double CAMERA_HEIGHT = 15.0;
+	public static final double CAMERA_ANGLE = 30.0;
+	public static final double CAMERA_HEIGHT = 43.2;
 	
 	public static final double LINEUP_FULL_SPEED = 1.0;
 	public static final double LINEUP_HALF_SPEED = 0.5;
-	public static final double DRIVE_STRAIGHT_CONSTANT = 1;
+	public static final double DRIVE_STRAIGHT_CONSTANT = 0.9;
 
 	//Ingestor
+	//public static final int INGESTOR_TALON_CARGO = 7;
 	public static final int INGESTOR_TALON_CARGO = 10;
-	public static final int INGESTOR_TALON_BELT = 11;
-
+	//public static final int INGESTOR_TALON_BELT = 11;
+	public static final int INGESTOR_TALON_BELT = 7;
 	public static final double INGESTOR_BELT_POWER = -1;
 
 	//Elevator
@@ -37,10 +38,17 @@ public class Constants {
 	public static int ELEVATOR_SPARKMAX_RIGHT = 3;
 
 
-	public static double ELEVATOR_kP = 0.00025;
+	// public static double ELEVATOR_kP = 0.00015;
+	// public static double ELEVATOR_kI = 0;
+	// public static double ELEVATOR_kD = 5;
+	// public static double ELEVATOR_kFF = 0.00025;
+	// public static double ELEVATOR_kIZ = 0;
+
+	
+	public static double ELEVATOR_kP = 0.1;
 	public static double ELEVATOR_kI = 0;
-	public static double ELEVATOR_kD = 5;
-	public static double ELEVATOR_kFF = 0.00025;
+	public static double ELEVATOR_kD = 0;
+	public static double ELEVATOR_kFF = 0;
 	public static double ELEVATOR_kIZ = 0;
 
 	public static double ELEVATOR_MAX_OUTPUT = 1;
@@ -55,7 +63,7 @@ public class Constants {
 	public static double ELEVATOR_MIN_ACC = -100;
 
 	public static double ELEVATOR_ARB_FEED_FORWARD = 1.35;
-	
+	//public static double ELEVATOR_ARB_FEED_FORWARD = 0;
 	public static  double ELEVATOR_ALLOWED_ERR = 1;
 
 	public static final int ELEVATOR_SMART_MOTION_SLOT = 0;
@@ -89,7 +97,7 @@ public class Constants {
 
 
 	public static final int LED_CHANNEL = 1;
-	public static final double LIMELIGHT_P = 0.001;
+	public static final double LIMELIGHT_P = 0.009;
 	public static final double LIMELIGHT_I = 0;
 	public static final double LIMELIGHT_D = 0;
 
@@ -101,5 +109,7 @@ public class Constants {
 
 	public static final double CARGO_SHIP_SETPOINT_HATCH = 13;
 	public static final double CARGO_SHIP_SETPOINT_CARGO = 14;
+
+	public static double DRIVE_STRAIGHT = 0;
 }
 

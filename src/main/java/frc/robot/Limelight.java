@@ -7,7 +7,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Limelight {
 	public static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    public static DriverStation ds = DriverStation.getInstance();
+	public static DriverStation ds = DriverStation.getInstance();
+	public static double error, integral, derivative, previous_error, output;
 
 	public static void testFeed(){
 		double x = table.getEntry("tx").getDouble(0.0);
@@ -57,22 +58,35 @@ public class Limelight {
 		}
 	}
 
-	public static void dumbLineup(){
-		Limelight.testFeed();
-		double x = Math.abs(Limelight.getX()) - 5;
+	public static void PID(double setpoint){
+		Limelight.error = setpoint - DriveTrain.getAHRS();
+		Limelight.integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+		
+        derivative = (error - Limelight.previous_error) / .02;
+		Limelight.output = Constants.LIMELIGHT_P*error + Constants.LIMELIGHT_I*Limelight.integral + Constants.LIMELIGHT_D*Limelight.derivative;
 
-		double power = x * 0.03;
-		if(Limelight.getX() >= 5d || Limelight.getX() <= -5d){
-			if(Limelight.getX() > 5){
-				DriveTrain.arcadeDrive(power, 0);
-			}else if(Limelight.getX() < -5){
-				DriveTrain.arcadeDrive(-power, 0);
-				
-			}
-		}
+		Limelight.previous_error = Limelight.error;
 		
 	}
 
+	public static void dumbLineup(){
+		Limelight.testFeed();
+		//double x = Math.abs(Limelight.getX()) - 1;
+
+		Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
+		//System.out.println(Limelight.output);
+		// if(Limelight.getX() >= 5d || Limelight.getX() <= -5d){
+		// 	if(Limelight.getX() > 5){
+		// 		DriveTrain.arcadeDrive(power, 0);
+		// 	}else if(Limelight.getX() < -5){
+		// 		DriveTrain.arcadeDrive(-power, 0);
+				
+		// 	}
+		// }
+
+		DriveTrain.arcadeDrive(Limelight.output, 0);
+		//DriveTrain.drive(Limelight.output, Limelight.output);
+	}
 	public static double getPipeline(){
 		NetworkTableEntry pipeline = table.getEntry("pipeline");
 		return pipeline.getDouble(-1);
@@ -81,7 +95,7 @@ public class Limelight {
 	public static void dock(){
 		double distance = Utils.distFrom(Utils.degToRad(Limelight.getX()),Utils.degToRad(Limelight.getY()));
 
-		Limelight.lineUp();
+		Limelight.dumbLineup();
 		DriveTrain.arcadeDrive(0.3, 0);
 		//Limelight.lineUp();
 		if(distance >= 50){
