@@ -71,7 +71,7 @@ import edu.wpi.first.wpilibj.Solenoid;
     }
 
     public static void setPosition(double elevatorPosition){
-        elevatorPIDController.setReference(elevatorPosition, ControlType.kSmartMotion, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
+        elevatorPIDController.setReference(elevatorPosition, ControlType.kPosition, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
         Elevator.setPosition = elevatorPosition;
     }
 
@@ -112,6 +112,10 @@ import edu.wpi.first.wpilibj.Solenoid;
 
     public static double getError(){
         return Elevator.getPosition() - Elevator.setPosition;
+    }
+
+    public static void resetEncs(){
+        elevatorEncoder.setPosition(0);
     }
 
     //Diagnostic Information

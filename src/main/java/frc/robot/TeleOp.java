@@ -40,34 +40,34 @@ public class TeleOp {
 		SmartDashboard.putNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
 		clock = new Timer();
 
-		Thread thread1 = new Thread(() -> {
-			while(!Thread.interrupted()){
+		// Thread thread1 = new Thread(() -> {
+		// 	while(!Thread.interrupted()){
 
 
-				// if(Math.abs(DriveTrain.getAvgVelocity()) > 3500d && !driver.getLeftBumper() && !driver.getRightBumper() && !DriveTrain.getShifted()){
-				// 	DriveTrain.shiftUp();
+		// 		// if(Math.abs(DriveTrain.getAvgVelocity()) > 3500d && !driver.getLeftBumper() && !driver.getRightBumper() && !DriveTrain.getShifted()){
+		// 		// 	DriveTrain.shiftUp();
 
-				// 	try{
-				// 		Thread.sleep(3000);
-				// 	}catch(InterruptedException ie){
-				// 		ie.printStackTrace();
-				// 		System.exit(-1);
-				// 	}
-				// }else{
-				// 	DriveTrain.shiftDown();
-				// }
+		// 		// 	try{
+		// 		// 		Thread.sleep(3000);
+		// 		// 	}catch(InterruptedException ie){
+		// 		// 		ie.printStackTrace();
+		// 		// 		System.exit(-1);
+		// 		// 	}
+		// 		// }else{
+		// 		// 	DriveTrain.shiftDown();
+		// 		// }
 
-				//Diagnostics.pushElevatorDiagnostics();
-				//Diagnostics.pushIngestorDiagnostics();
-				Diagnostics.pushDriveTrainDiagnostics();
-				try{
-					Thread.sleep(100);
-				}catch(InterruptedException ie){
-					ie.printStackTrace();
-					return;
-				}
-			}
-		});
+		// 		//Diagnostics.pushElevatorDiagnostics();
+		// 		//Diagnostics.pushIngestorDiagnostics();
+		// 		//Diagnostics.pushDriveTrainDiagnostics();
+		// 		try{
+		// 			Thread.sleep(100);
+		// 		}catch(InterruptedException ie){
+		// 			ie.printStackTrace();
+		// 			return;
+		// 		}
+		// 	}
+		// });
 
 		// Thread thread2 = new Thread(() -> {
 		// 	while(!Thread.interrupted()){
@@ -82,10 +82,10 @@ public class TeleOp {
 		// 	}
 		// });
 
-		thread1.setPriority(1);
-		//thread2.setPriority(1);
+		// thread1.setPriority(1);
+		// //thread2.setPriority(1);
 
-		thread1.start();
+		// thread1.start();
 		//thread2.start();
 
 		LEDs.setNeutral();
@@ -98,7 +98,7 @@ public class TeleOp {
 		 *    DRIVER CONTROLS BELOW
 		 * ============================
 		 */
-		long startTime = System.currentTimeMillis();
+		//long startTime = System.currentTimeMillis();
 
 		Limelight.changePipeline(0);
 		//System.out.println("HAS VALID TARGETS: " + Limelight.hasValidTargets());
@@ -162,12 +162,12 @@ public class TeleOp {
 
 		if(manip.getLeftStickYAxis() < -0.1){
 			Ingestor.beltUp();
-			Ingestor.ingestCargo(-manip.getLeftStickYAxis());
+			Ingestor.ingestCargo(-1);
 			Elevator.setFrontHolderPower(1);
-			Elevator.setBackHolderPower(1);
+			Elevator.setBackHolderPower(-1);
 		}else if(manip.getLeftStickYAxis() > 0.1){
 			Elevator.setFrontHolderPower(-1);
-			Elevator.setBackHolderPower(1);
+			Elevator.setBackHolderPower(-1);
 		}else{
 			Ingestor.beltStop();
 			Ingestor.ingestCargo(0.0);
@@ -204,7 +204,7 @@ public class TeleOp {
 		if(manip.getLeftBumper() && (manip.getRightStickYAxis() > 0.1 || manip.getRightStickYAxis() < -0.1)){
 			Ingestor.beltUp();
 			if(Math.abs(manip.getRightStickYAxis()) > 0.1){
-				Ingestor.ingestCargo(manip.getRightStickYAxis());
+				Ingestor.ingestCargo(-manip.getRightStickYAxis());
 			}
 		}
 
@@ -220,10 +220,37 @@ public class TeleOp {
 			if(manip.getLeftBumper()){
 				Elevator.setPower(-0.05, 0);
 			}else{
-				Elevator.setPower(Utils.expoDeadzone(manip.getRightStickYAxis(), 0.1, 1.2));
+				Elevator.setPower(Utils.expoDeadzone(-manip.getRightStickYAxis(), 0.1, 1.2));
 			}
 		}
 
+		if(manip.getXButton()){
+			Ingestor.beltDown();
+		}
+
+		if(manip.getAButton()){
+			Elevator.resetEncs();
+		}
+		//CargoShip
+		if(manip.getYButton()){
+			Elevator.setPosition(-30);
+		}
+
+		//Rocket Low
+		if(manip.getDPad() == 0){
+			Elevator.setPosition(-50);
+		}
+
+		//Rocket Middle
+		if(manip.getDPad() == 90){
+			Elevator.setPosition(-45);
+		}
+
+		//Rocket High
+		if(manip.getDPad() == 180){
+			Elevator.setPosition(-1);
+		}
+		//System.out.println(Elevator.getPosition());
 		// if(manip.getPOV(0) != -1){
 		// 	//current % (setpoints length) returns index to next array
 		// 	Elevator.setPosition(rocketSetpoints[((currentSetpoint++) % rocketSetpoints.length)]);
@@ -238,40 +265,40 @@ public class TeleOp {
 		 * ||====================================||
 		 * ||====================================||
 		 */
-		double p = SmartDashboard.getNumber("P Gain", Constants.ELEVATOR_kP);
-		double i = SmartDashboard.getNumber("I Gain", Constants.ELEVATOR_kI);
-		double d = SmartDashboard.getNumber("D Gain", Constants.ELEVATOR_kD);
-		double iz = SmartDashboard.getNumber("I Zone", Constants.ELEVATOR_kIZ);
-		double ff = SmartDashboard.getNumber("Feed Forward", Constants.ELEVATOR_kFF);
-		double maxOut = SmartDashboard.getNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
-		double minOut = SmartDashboard.getNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
+		// double p = SmartDashboard.getNumber("P Gain", Constants.ELEVATOR_kP);
+		// double i = SmartDashboard.getNumber("I Gain", Constants.ELEVATOR_kI);
+		// double d = SmartDashboard.getNumber("D Gain", Constants.ELEVATOR_kD);
+		// double iz = SmartDashboard.getNumber("I Zone", Constants.ELEVATOR_kIZ);
+		// double ff = SmartDashboard.getNumber("Feed Forward", Constants.ELEVATOR_kFF);
+		// double maxOut = SmartDashboard.getNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
+		// double minOut = SmartDashboard.getNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
 
-		double maxVel = SmartDashboard.getNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
-		double minVel = SmartDashboard.getNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
-		double maxAcc = SmartDashboard.getNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
-		double loopErr = SmartDashboard.getNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
+		// double maxVel = SmartDashboard.getNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
+		// double minVel = SmartDashboard.getNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
+		// double maxAcc = SmartDashboard.getNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
+		// double loopErr = SmartDashboard.getNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
 		
 		
-		if((p != Constants.ELEVATOR_kP)) { Elevator.setELEVATOR_P(p); Constants.ELEVATOR_kP = p; System.out.println("Changed Value to: " + p); }
-		if((i != Constants.ELEVATOR_kI)) { Elevator.setELEVATOR_I(i); Constants.ELEVATOR_kI = i; }
-		if((d != Constants.ELEVATOR_kD)) { Elevator.setELEVATOR_D(d); Constants.ELEVATOR_kD = d; }
-		if((iz != Constants.ELEVATOR_kIZ)) { Elevator.setELEVATOR_IZ(iz); Constants.ELEVATOR_kIZ = iz; }
-		if((ff != Constants.ELEVATOR_kFF)) { Elevator.setELEVATOR_FF(ff);; Constants.ELEVATOR_kFF = ff; }
-		if((maxOut != Constants.ELEVATOR_MAX_OUTPUT) || (minOut != Constants.ELEVATOR_MIN_OUTPUT)) { 
-			Elevator.setELEVATOR_KOUTPUT(minOut, maxOut);
-			Constants.ELEVATOR_MIN_OUTPUT = minOut;
-			Constants.ELEVATOR_MAX_OUTPUT = maxOut;
-		}
+		// if((p != Constants.ELEVATOR_kP)) { Elevator.setELEVATOR_P(p); Constants.ELEVATOR_kP = p; System.out.println("Changed Value to: " + p); }
+		// if((i != Constants.ELEVATOR_kI)) { Elevator.setELEVATOR_I(i); Constants.ELEVATOR_kI = i; }
+		// if((d != Constants.ELEVATOR_kD)) { Elevator.setELEVATOR_D(d); Constants.ELEVATOR_kD = d; }
+		// if((iz != Constants.ELEVATOR_kIZ)) { Elevator.setELEVATOR_IZ(iz); Constants.ELEVATOR_kIZ = iz; }
+		// if((ff != Constants.ELEVATOR_kFF)) { Elevator.setELEVATOR_FF(ff);; Constants.ELEVATOR_kFF = ff; }
+		// if((maxOut != Constants.ELEVATOR_MAX_OUTPUT) || (minOut != Constants.ELEVATOR_MIN_OUTPUT)) { 
+		// 	Elevator.setELEVATOR_KOUTPUT(minOut, maxOut);
+		// 	Constants.ELEVATOR_MIN_OUTPUT = minOut;
+		// 	Constants.ELEVATOR_MAX_OUTPUT = maxOut;
+		// }
 		
-		if((maxVel  != Constants.ELEVATOR_MAX_VEL)) { Elevator.setELEVATOR_MAXVEL(maxVel); Constants.ELEVATOR_MAX_VEL = maxVel; }
-		if((minVel  != Constants.ELEVATOR_MIN_VEL)) { Elevator.setELEVATOR_MINVEL(minVel); Constants.ELEVATOR_MIN_VEL = minVel; }
-		if((maxAcc  != Constants.ELEVATOR_MAX_ACC)) { Elevator.setELEVATOR_MAXACC(maxAcc); Constants.ELEVATOR_MAX_ACC = maxAcc; }
-		if((loopErr != Constants.ELEVATOR_ALLOWED_ERR)) { Elevator.setELEVATOR_MAXERR(loopErr); Constants.ELEVATOR_ALLOWED_ERR = loopErr; }
+		// if((maxVel  != Constants.ELEVATOR_MAX_VEL)) { Elevator.setELEVATOR_MAXVEL(maxVel); Constants.ELEVATOR_MAX_VEL = maxVel; }
+		// if((minVel  != Constants.ELEVATOR_MIN_VEL)) { Elevator.setELEVATOR_MINVEL(minVel); Constants.ELEVATOR_MIN_VEL = minVel; }
+		// if((maxAcc  != Constants.ELEVATOR_MAX_ACC)) { Elevator.setELEVATOR_MAXACC(maxAcc); Constants.ELEVATOR_MAX_ACC = maxAcc; }
+		// if((loopErr != Constants.ELEVATOR_ALLOWED_ERR)) { Elevator.setELEVATOR_MAXERR(loopErr); Constants.ELEVATOR_ALLOWED_ERR = loopErr; }
 
 		
-		if(System.currentTimeMillis() - startTime > 10){
-			System.out.println(System.currentTimeMillis() - startTime);
-		}
+		// if(System.currentTimeMillis() - startTime > 10){
+		// 	System.out.println(System.currentTimeMillis() - startTime);
+		// }
 
 	}
 }

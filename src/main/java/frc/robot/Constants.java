@@ -37,14 +37,14 @@ public class Constants {
 	public static int ELEVATOR_SPARKMAX_RIGHT = 3;
 
 
-	public static double ELEVATOR_kP = 0.00025;
+	public static double ELEVATOR_kP = 0.1;
 	public static double ELEVATOR_kI = 0;
 	public static double ELEVATOR_kD = 5;
 	public static double ELEVATOR_kFF = 0.00025;
-	public static double ELEVATOR_kIZ = 0;
+	public static double ELEVATOR_kIZ = 100;
 
-	public static double ELEVATOR_MAX_OUTPUT = 1;
-	public static double ELEVATOR_MIN_OUTPUT = -1;
+	public static double ELEVATOR_MAX_OUTPUT = 0.7;
+	public static double ELEVATOR_MIN_OUTPUT = -0.7;
 
 	public static double ELEVATOR_MAX_RPM = 5700;
 
@@ -54,7 +54,7 @@ public class Constants {
 	public static double ELEVATOR_MAX_ACC = 100;
 	public static double ELEVATOR_MIN_ACC = -100;
 
-	public static double ELEVATOR_ARB_FEED_FORWARD = 1.35;
+	public static double ELEVATOR_ARB_FEED_FORWARD = -1.34;
 	
 	public static  double ELEVATOR_ALLOWED_ERR = 1;
 
