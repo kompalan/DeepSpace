@@ -63,17 +63,17 @@ public class Limelight {
 		Limelight.integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
 		
         derivative = (error - Limelight.previous_error) / .02;
-		Limelight.output = Constants.LIMELIGHT_P*error + Constants.LIMELIGHT_I*Limelight.integral + Constants.LIMELIGHT_D*Limelight.derivative;
 
 		Limelight.previous_error = Limelight.error;
-		
+	
+		Limelight.output = Constants.LIMELIGHT_P*error + Constants.LIMELIGHT_I*Limelight.integral + Constants.LIMELIGHT_D*Limelight.derivative;
 	}
 
 	public static void dumbLineup(){
 		Limelight.testFeed();
 		//double x = Math.abs(Limelight.getX()) - 1;
 
-		Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
+		//double output = Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
 		//System.out.println(Limelight.output);
 		// if(Limelight.getX() >= 5d || Limelight.getX() <= -5d){
 		// 	if(Limelight.getX() > 5){
@@ -84,7 +84,7 @@ public class Limelight {
 		// 	}
 		// }
 
-		DriveTrain.arcadeDrive(Limelight.output, 0);
+		DriveTrain.arcadeDrive(output, 0);
 		//DriveTrain.drive(Limelight.output, Limelight.output);
 	}
 	public static double getPipeline(){
