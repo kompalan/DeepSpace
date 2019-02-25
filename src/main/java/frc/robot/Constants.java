@@ -54,7 +54,7 @@ public class Constants {
 	public static double ELEVATOR_MAX_ACC = 100;
 	public static double ELEVATOR_MIN_ACC = -100;
 
-	public static double ELEVATOR_ARB_FEED_FORWARD = -1.34;
+	public static double ELEVATOR_ARB_FEED_FORWARD = -1;
 	
 	public static  double ELEVATOR_ALLOWED_ERR = 1;
 

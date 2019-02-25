@@ -49,10 +49,10 @@ public class Robot extends TimedRobot{
   @Override
   public void teleopPeriodic() {
     TeleOp.run();
-    }
+  }
 
   @Override
   public void disabledPeriodic(){
-    LEDs.setNeutral();
+    //LEDs.setNeutral();
   }
 }

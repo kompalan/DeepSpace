@@ -8,7 +8,8 @@ public class TeleOp {
 	private static XBoxController manip;
 	private static XBoxController driver;
 	private static TeleOp instance;
-	private static double[] rocketSetpoints = {100.0, 200.0, 300.0};
+	private static double[] rocketSetpoints = {0, -26.12649917602539, -53.45470428466797};
+	private static double cargoSetpoints = -17.675899505615234;
 	private static int currentSetpoint = 0;
 	private static Timer clock;
 	private static boolean wasStartPressed = false;
@@ -26,19 +27,19 @@ public class TeleOp {
 		
 
 	public static void init(){
-		SmartDashboard.putNumber("P Gain", Constants.ELEVATOR_kP);
-		SmartDashboard.putNumber("I Gain", Constants.ELEVATOR_kI);
-		SmartDashboard.putNumber("D Gain", Constants.ELEVATOR_kD);
-		SmartDashboard.putNumber("I Zone", Constants.ELEVATOR_kIZ);
-		SmartDashboard.putNumber("Feed Forward", Constants.ELEVATOR_kFF);
-		SmartDashboard.putNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
-		SmartDashboard.putNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
+		// SmartDashboard.putNumber("P Gain", Constants.ELEVATOR_kP);
+		// SmartDashboard.putNumber("I Gain", Constants.ELEVATOR_kI);
+		// SmartDashboard.putNumber("D Gain", Constants.ELEVATOR_kD);
+		// SmartDashboard.putNumber("I Zone", Constants.ELEVATOR_kIZ);
+		// SmartDashboard.putNumber("Feed Forward", Constants.ELEVATOR_kFF);
+		// SmartDashboard.putNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
+		// SmartDashboard.putNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
 
-		SmartDashboard.putNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
-		SmartDashboard.putNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
-		SmartDashboard.putNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
-		SmartDashboard.putNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
-		clock = new Timer();
+		// SmartDashboard.putNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
+		// SmartDashboard.putNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
+		// SmartDashboard.putNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
+		// SmartDashboard.putNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
+		//clock = new Timer();
 
 		// Thread thread1 = new Thread(() -> {
 		// 	while(!Thread.interrupted()){
@@ -72,7 +73,7 @@ public class TeleOp {
 		// Thread thread2 = new Thread(() -> {
 		// 	while(!Thread.interrupted()){
 		// 		long startTime = System.currentTimeMillis();
-		// 		Diagnostics.pushErrorDiagnostics();
+		// 		Diagnostics.pushElevatorDiagnostics();
 		// 		try{
 		// 			Thread.sleep(20);
 		// 		}catch(InterruptedException ie){
@@ -82,11 +83,11 @@ public class TeleOp {
 		// 	}
 		// });
 
-		// thread1.setPriority(1);
-		// //thread2.setPriority(1);
+		// //thread1.setPriority(1);
+		// thread2.setPriority(1);
 
-		// thread1.start();
-		//thread2.start();
+		// //thread1.start();
+		// thread2.start();
 
 		LEDs.setNeutral();
 		
@@ -160,13 +161,13 @@ public class TeleOp {
 		 * ============================
 		 */
 
-		if(manip.getLeftStickYAxis() < -0.1){
+		if(manip.getLeftStickYAxis() < -0.15){
 			Ingestor.beltUp();
-			Ingestor.ingestCargo(-1);
+			Ingestor.ingestCargo(1);
 			Elevator.setFrontHolderPower(1);
-			Elevator.setBackHolderPower(-1);
+			Elevator.setBackHolderPower(1);
 		}else if(manip.getLeftStickYAxis() > 0.1){
-			Elevator.setFrontHolderPower(-1);
+			Elevator.setFrontHolderPower(1);
 			Elevator.setBackHolderPower(-1);
 		}else{
 			Ingestor.beltStop();
@@ -203,7 +204,7 @@ public class TeleOp {
 		
 		if(manip.getLeftBumper() && (manip.getRightStickYAxis() > 0.1 || manip.getRightStickYAxis() < -0.1)){
 			Ingestor.beltUp();
-			if(Math.abs(manip.getRightStickYAxis()) > 0.1){
+			if(Math.abs(manip.getRightStickYAxis()) > 0.15){
 				Ingestor.ingestCargo(-manip.getRightStickYAxis());
 			}
 		}
@@ -231,24 +232,24 @@ public class TeleOp {
 		if(manip.getAButton()){
 			Elevator.resetEncs();
 		}
-		//CargoShip
+		// CargoShip
 		if(manip.getYButton()){
-			Elevator.setPosition(-30);
+			Elevator.setPosition(TeleOp.cargoSetpoints);
 		}
 
 		//Rocket Low
-		if(manip.getDPad() == 0){
-			Elevator.setPosition(-50);
+		if(manip.getDPad() == 180){
+			Elevator.setPosition(TeleOp.rocketSetpoints[0]);
 		}
 
 		//Rocket Middle
 		if(manip.getDPad() == 90){
-			Elevator.setPosition(-45);
+			Elevator.setPosition(TeleOp.rocketSetpoints[1]);
 		}
 
 		//Rocket High
-		if(manip.getDPad() == 180){
-			Elevator.setPosition(-1);
+		if(manip.getDPad() == 0){
+			Elevator.setPosition(TeleOp.rocketSetpoints[2]);
 		}
 		//System.out.println(Elevator.getPosition());
 		// if(manip.getPOV(0) != -1){
@@ -257,6 +258,7 @@ public class TeleOp {
 		// }
 		LEDs.setNeutral();
 		//System.out.println("loop time: " + (System.currentTimeMillis() - startTime));
+		
 
 		/**
 		 * ||====================================||

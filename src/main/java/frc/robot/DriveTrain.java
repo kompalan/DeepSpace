@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class DriveTrain implements PIDOutput{
     private static CANSparkMax rightMotorFront, rightMotorMiddle, rightMotorBack, leftMotorFront, leftMotorMiddle, leftMotorBack;
@@ -72,6 +73,8 @@ public class DriveTrain implements PIDOutput{
 
         pidControllerLeftFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
         pidControllerRightFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
+
+        DriveTrain.setCoast();
 
         rightMotorMiddle.follow(rightMotorFront);
         rightMotorBack.follow(rightMotorFront);
@@ -158,6 +161,17 @@ public class DriveTrain implements PIDOutput{
         DriveTrain.arcadeDrive(output, 0);
         // }
 	}
+
+    public static void setCoast(){
+        rightMotorFront.setIdleMode(IdleMode.kCoast);
+        rightMotorMiddle.setIdleMode(IdleMode.kCoast);
+        rightMotorBack.setIdleMode(IdleMode.kCoast);
+
+        leftMotorFront.setIdleMode(IdleMode.kCoast);
+        leftMotorMiddle.setIdleMode(IdleMode.kCoast);
+        leftMotorBack.setIdleMode(IdleMode.kCoast);
+    }
+
 
     public static void pidDisable(){
         System.out.println("PID Disabled");
