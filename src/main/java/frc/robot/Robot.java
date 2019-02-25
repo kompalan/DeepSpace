@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Robot extends TimedRobot{
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
-  private static XBoxController manip;
+
   @Override
   public void robotInit() {
     // JSONConstants.setFilePath(this.ROBOT_FILE_PATH);

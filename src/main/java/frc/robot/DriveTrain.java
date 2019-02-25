@@ -6,20 +6,20 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-public class DriveTrain implements PIDOutput{
+public class DriveTrain{
     private static CANSparkMax rightMotorFront, rightMotorMiddle, rightMotorBack, leftMotorFront, leftMotorMiddle, leftMotorBack;
     private static CANPIDController pidControllerLeftFront, pidControllerRightFront;
     private static CANEncoder encoderLeftFront, encoderRightFront;
     private static AHRS hyro;
     private static Solenoid shifter;
-    private static AnuragPIDController hyropid;
     public static DriveTrain instance = null;
+
+    public static double error, integral, derivative, previous_error, output;
     
     public static DriveTrain getInstance(){
         if(instance == null){
@@ -44,12 +44,6 @@ public class DriveTrain implements PIDOutput{
 
         //Gyro Instantiation Plus PID
         hyro = new AHRS(SPI.Port.kMXP);
-        hyropid = new AnuragPIDController(Constants.LIMELIGHT_P, Constants.LIMELIGHT_I, Constants.LIMELIGHT_D, hyro, this);
-        hyropid.setInputRange(-180d, 180d);
-        hyropid.setOutputRange(-1.0, 1.0);
-
-        hyropid.setAbsoluteTolerance(2d);
-        hyropid.setContinuous(true);
 
         //Shifter
         shifter = new Solenoid(Constants.SOLENOID_SHIFTER);
@@ -74,10 +68,16 @@ public class DriveTrain implements PIDOutput{
         pidControllerLeftFront.setD(Constants.kD);
         pidControllerLeftFront.setIZone(Constants.kIz);
 
+
+        //Out motor output range is -100 percent power to 100 percent power
         pidControllerLeftFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
         pidControllerRightFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
+
+        //Set all motors to coast mode
         DriveTrain.setAllCoast();
         
+        //Set all back and middle motors as a "follower" of front motors
+        //This means that the "slaves" inherit almost all properties of its master (powers etc.)
         rightMotorMiddle.follow(rightMotorFront);
         rightMotorBack.follow(rightMotorFront);
         
@@ -87,28 +87,34 @@ public class DriveTrain implements PIDOutput{
         
     }
 
+    //Drive on Duty Cycle with Powers supplied by the parameters
     public static void drive(double powerLeft, double powerRight){
         pidControllerRightFront.setReference(powerRight, ControlType.kDutyCycle);
         pidControllerLeftFront.setReference(powerLeft, ControlType.kDutyCycle);
     }
 
-    public static void arcadeDrive(double fwd, double tur) {
+    public static void arcadeDrive(double tur, double fwd) {
         //Arcade Drive      
 		drive(Utils.ensureRange(fwd + tur, -1d, 1d), Utils.ensureRange(fwd - tur, -1d, 1d));
     }
 
     public static double getAHRS(){
+        //Get Angle of Gyro
         return hyro.getAngle();
     }
 
     public static void shiftUp(){
+        //Set the single solenoid to the "active" state
         shifter.set(true);
     }
 
     public static void shiftDown(){
+        //Set the single solenoid to the "deactive" state
         shifter.set(false);
     }
 
+    //Sets all motors to coast mode, meaning when motors stop, wheels can still move freely
+    //Allows our drivers to slide to a destination instead of aiming, which takes time.
     public static void setAllCoast(){
         rightMotorFront.setIdleMode(IdleMode.kCoast);
         rightMotorMiddle.setIdleMode(IdleMode.kCoast);
@@ -119,6 +125,8 @@ public class DriveTrain implements PIDOutput{
         leftMotorBack.setIdleMode(IdleMode.kCoast);
     }
 
+    //Sets all motors to break mode meaning when motors stop, wheel movement will be restricted
+    //This will be set for PID, for accuracy
     public static void setAllBreak(){
         rightMotorFront.setIdleMode(IdleMode.kBrake);
         rightMotorMiddle.setIdleMode(IdleMode.kBrake);
@@ -128,74 +136,73 @@ public class DriveTrain implements PIDOutput{
         leftMotorMiddle.setIdleMode(IdleMode.kBrake);
         leftMotorBack.setIdleMode(IdleMode.kBrake);
     }
+
     public static boolean getShifted(){
+        //Get the state of the shifter... are we shifted up? or down?
         return shifter.get();
     }
 
     public static double getEncoderRight(){
+        //Get Encoder Position of the Master Encoder
         return encoderRightFront.getPosition();
     }
 
-    public static double getEncoderLeft(){
+    public static double getEncoderLeft(){ 
+        //Get Encoder Position of the Master Encoder
         return encoderLeftFront.getPosition();
     }
 
     public static double getVelocityRight(){
+        //Get RPM of Master Encoder
         return encoderLeftFront.getVelocity();
     }
 
     public static double getVelocityLeft(){
+        //Get RPM of Master Encoder
         return encoderLeftFront.getVelocity();
     }
 
     public static double getAvgVelocity(){
+        //TODO: Actually Make it an average
         return encoderLeftFront.getVelocity();
     }
 
-    //Turn To Angle
-    public static void turnToAngle(double angle){
-		hyropid.setSetpoint(angle);
-		if(!hyropid.isEnabled()){
-			//System.out.println("PID Enabled");
-			hyropid.reset();
-			hyropid.enable();
-		}	
+
+    public static void PID(double setpoint){
+        //Makeshift PID for turning to an angle sensibly
+
+        //Get Error
+        DriveTrain.error = setpoint - DriveTrain.getAHRS();
+        
+        //Integral term is error over time
+		DriveTrain.integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+        
+        //Derivative is rate of change over loop time
+        derivative = (error - DriveTrain.previous_error) / .02;
+
+        //Set the current error as previous error
+		DriveTrain.previous_error = DriveTrain.error;
+    
+        //Set instance variable DriveTrain.output as the output of PID Controller
+        DriveTrain.output = Constants.LIMELIGHT_P*error + Constants.LIMELIGHT_I*Limelight.integral + Constants.LIMELIGHT_D*Limelight.derivative;   
     }
-    
-    
-	@Override
-	public void pidWrite(double output) {
-        System.out.println("PID Wrote " + output);
-		if (Math.abs(hyropid.getError()) < 5d) {
-			hyropid.setPID(hyropid.getP(), .001, 0);
-		} else {
-			// I Zone
-			hyropid.setPID(hyropid.getP(), 0, 0);
-        }
-        DriveTrain.arcadeDrive(output, 0);
+
+    public static void driveStraight(){ 
+        //Resets the gyro to zero and continues along the current heading.       
+        DriveTrain.resetAHRS();
+
+        DriveTrain.PID(0);
+
 	}
-
-    public static void pidDisable(){
-        System.out.println("PID Disabled");
-        hyropid.disable();
-    }
-
-    public static void pidEnable(){
-        hyropid.enable();
-    }
-
-    public static boolean ispidEnabled(){
-        return hyropid.isEnabled();
+    
+    public static void resetAHRS(){
+        //Reset the Yaw Value of AHRS to Zero
+        hyro.reset();
     }
 
     //Diagnostics
     public static double getRightMotorFrontTemp(){
         return rightMotorFront.getMotorTemperature();
-    }
-
-    public static double getPIDError(){
-        System.out.println("ERROR: " + hyropid.getError());
-        return hyropid.getError();
     }
 
     public static double getRightMotorMiddleTemp(){
@@ -240,10 +247,4 @@ public class DriveTrain implements PIDOutput{
     public static double getLeftMotorBackCurrent(){
         return leftMotorBack.getOutputCurrent();
     }
-
-    public static void driveStraight(double power){
-		//DriveTrain.drive(power * Constants.DRIVE_STRAIGHT_CONSTANT, -power);
-        Limelight.PID(DriveTrain.getAHRS());
-        DriveTrain.arcadeDrive(power, Limelight.output);
-	}
 }

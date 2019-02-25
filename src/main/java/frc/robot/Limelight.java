@@ -6,10 +6,20 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class Limelight {
+	/**
+	 * <summary>
+	 * Since Limelight Reads From Network Tables,
+	 * this file is simply networktables operations, like Reading and Writing
+	 * 
+	 * This file also contains Limelight Based PID for Turning to Vision Target Angles
+	 * </summary>
+	 */
+
 	public static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 	public static DriverStation ds = DriverStation.getInstance();
 	public static double error, integral, derivative, previous_error, output;
 
+	
 	public static void testFeed(){
 		double x = table.getEntry("tx").getDouble(0.0);
 		double y = table.getEntry("ty").getDouble(0.0);		
@@ -47,17 +57,6 @@ public class Limelight {
 		return table.getEntry("ty1").getDouble(0.0);
 	}
 
-	public static void lineUp(){
-		Limelight.testFeed();
-		double target = DriveTrain.getAHRS() + Limelight.getX();
-		DriveTrain.turnToAngle(target);
-		System.out.println("TARGET: " + target);
-		System.out.println("AHRS: " + DriveTrain.getAHRS());
-		if(!ds.isEnabled()){
-			DriveTrain.pidDisable();
-		}
-	}
-
 	public static void PID(double setpoint){
 		Limelight.error = setpoint - DriveTrain.getAHRS();
 		Limelight.integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
@@ -73,16 +72,7 @@ public class Limelight {
 		Limelight.testFeed();
 		//double x = Math.abs(Limelight.getX()) - 1;
 
-		//double output = Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
-		//System.out.println(Limelight.output);
-		// if(Limelight.getX() >= 5d || Limelight.getX() <= -5d){
-		// 	if(Limelight.getX() > 5){
-		// 		DriveTrain.arcadeDrive(power, 0);
-		// 	}else if(Limelight.getX() < -5){
-		// 		DriveTrain.arcadeDrive(-power, 0);
-				
-		// 	}
-		// }
+		Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
 
 		DriveTrain.arcadeDrive(output, 0);
 		//DriveTrain.drive(Limelight.output, Limelight.output);

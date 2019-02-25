@@ -1,20 +1,15 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class TeleOp {
 	private static XBoxController manip;
 	private static XBoxController driver;
 	private static TeleOp instance;
 	private static boolean wasStartPressed = false;
-	private static boolean wasDPadUpPressed = false;
 
-	private static double[] rocketSetpoints = {0, 31.13533592224121, 55};
-	//15.026803970336914
-	private static double cargoSetpoint = 15.026803970336914;
-	private static int currentSetpointIndex = 0;
 
+	private static double[] rocketSetpoints = {-3, 31.13533592224121, 55}; //Needs to be changed every match
+	private static double cargoSetpoint = 15.026803970336914; //Same with this one
+	
 	public static TeleOp getInstance() {
 		if (instance == null)
 			instance = new TeleOp();
@@ -22,43 +17,14 @@ public class TeleOp {
 	}
 	
 	private TeleOp(){
+		//Driver Should be Set to Port 0, while Manip should be set to Port 1
+		//Port Numbers Correspond to Ports on DS
 		driver = new XBoxController(Constants.XBOX_DRIVER);
 		manip = new XBoxController(Constants.XBOX_MANIP);
 	}
 		
 
 	public static void init(){
-		// SmartDashboard.putNumber("P Gain", Constants.ELEVATOR_kP);
-		// SmartDashboard.putNumber("I Gain", Constants.ELEVATOR_kI);
-		// SmartDashboard.putNumber("D Gain", Constants.ELEVATOR_kD);
-		// SmartDashboard.putNumber("I Zone", Constants.ELEVATOR_kIZ);
-		// SmartDashboard.putNumber("Feed Forward", Constants.ELEVATOR_kFF);
-		// SmartDashboard.putNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
-		// SmartDashboard.putNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
-
-		// SmartDashboard.putNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
-		// SmartDashboard.putNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
-		// SmartDashboard.putNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
-		// SmartDashboard.putNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
-
-		// Thread thread1 = new Thread(() -> {
-		// 	while(!Thread.interrupted()){
-		// 		//Push Diagnostics to Shuffleboard 
-		// 		//Diagnostics.pushElevatorDiagnostics();
-		// 		Diagnostics.pushErrorDiagnostics();
-
-		// 		try{
-		// 			Thread.sleep(100);
-		// 		}catch(InterruptedException ie){
-		// 			ie.printStackTrace();
-
-		// 			return;
-		// 		}
-		// 	}
-		// });
-
-		// thread1.setPriority(1);
-		// thread1.start();
 
 		LEDs.setNeutral();
 		
@@ -72,37 +38,46 @@ public class TeleOp {
 		 */
 
 			
-
+		/**
+		 * Simple Shifter: If we get the right bumper, shift to high gear
+		 * Default: Low Gear 
+		 */
 		if(driver.getRightBumper()){
 			DriveTrain.shiftUp();
 		}else{
 			DriveTrain.shiftDown();
 		}
-
-		if(driver.getXButton()){
-			Elevator.setPosition(74);
-		}
-
-		if(driver.getAButton()){
-			Elevator.setPosition(46.5);
-		}
-
-		if(driver.getBButton()){
-			Elevator.setPosition(18.5);
-		}
 		
+		/**
+		 * If we get Left Bumper, change the pipeline to the "vision target pipeline" (1)
+		 * Then Check if we have valid targets to line up to
+		 * Then lineup ONCE and drive straight
+		 * 
+		 * This is built on the assumption that driver is mostly lined up with target and 
+		 * simply needs a little help.
+		 */
 		if(driver.getLeftBumper()){
 			Limelight.changePipeline(1);
 
 			if(Limelight.hasValidTargets()){
 				Limelight.dumbLineup();
-				DriveTrain.driveStraight(0.1);
+				DriveTrain.driveStraight();
+
+				DriveTrain.arcadeDrive(
+					DriveTrain.output, 
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+				);
 				
 			}else{
+
+				//TODO: Set Rumbles Based on Whether We have a Target or Not
 				driver.setLeftRumble(0.0);
 				driver.setRightRumble(0.0);
 			}
+
 		}else{
+
+			//Normal Driver Pipeline in order to See the Field During Sandstorm
 			Limelight.changePipeline(0);
 			DriveTrain.arcadeDrive(
 				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2), 
@@ -117,29 +92,45 @@ public class TeleOp {
 		 * ============================
 		 */
 
+		/**
+		 * If we get manip pulling back on the joystick, then we know that he/she wants to ingest, 
+		 * meaning that belts need to go up, rollerbar needs to set power to INTAKE, and front holders
+		 * and back holders need to be moving the opposite directions
+		 */
+		
 		if(manip.getLeftStickYAxis() < -0.15){
-			Ingestor.beltUp();
+			Ingestor.beltDown();
 			Ingestor.ingestCargo(1);
-			Elevator.setFrontHolderPower(1);
-			Elevator.setBackHolderPower(1);
+			Elevator.setFrontHolderPower(1); //Front holder moves backward with "1" power
+			Elevator.setBackHolderPower(1); //Back holder always moves forward
 		}else if(manip.getLeftStickYAxis() > 0.1){
-			Elevator.setFrontHolderPower(-1);
-			Elevator.setBackHolderPower(1);
+			//If manip pushes joystick forward, both cargo holders need to move forward
+			Elevator.setFrontHolderPower(-1); //Front holder moveds forward with "-1" power
+			Elevator.setBackHolderPower(1); //Back holder always moves forward
 		}else{
+			//Belts, Rollerbar and Cargo Holders do not need to move when this joystick is not activated
 			Ingestor.beltStop();
 			Ingestor.ingestCargo(0.0);
 			Elevator.setFrontHolderPower(0.0);
 			Elevator.setBackHolderPower(0.0);
 		}
-	
+
+		//If Right Bumper is Pressed Do the Crab thing
 		if(manip.getRightBumper()){
 			Elevator.setClawIn();
 			LEDs.setLime();
 		}else{
+			//Set Default to Out (Does not need to be latching)
 			Elevator.setClawOut();
 			
 		}
 
+		//Latching Trigger to Flipping Up Elevator Claw Thing
+
+		/**
+		 * Check for a time when Trigger is pressed but hasn't been pressed in a previous loop in order
+		 * to press the trigger with out it spazzing out
+		*/ 
 		boolean isStartPressed = manip.getRightTriggerButton();
 		if(isStartPressed && !wasStartPressed){
 			if(Elevator.getFlipped()){
@@ -151,13 +142,15 @@ public class TeleOp {
 		}
 		wasStartPressed = isStartPressed;
 	
-
+		//Put Ingestor Down In Order to Grab Cargo
 		if(manip.getLeftBumper()){
 			Ingestor.ingestorDown();
 		}else{
 			Ingestor.ingestorUp();
 		}
 		
+		//Dont know why this exists...
+		//TODO: Make sure this is important... if not remove and test
 		if(manip.getLeftBumper() && (manip.getRightStickYAxis() > 0.1 || manip.getRightStickYAxis() < -0.1)){
 			Ingestor.beltUp();
 			if(Math.abs(manip.getRightStickYAxis()) > 0.15){
@@ -168,13 +161,20 @@ public class TeleOp {
 
 
 		if(manip.getAButton()){
+			//Manual Workaround due to absence of limit switch
 			Elevator.zeroElevator();
 		}
 
+
 		if(manip.getXButton()){
-			//Elevator Setpoint Position
+			//If we get two balls in the cargo transport system
 			Ingestor.beltDown();
+			
 		}else{
+			/**
+			 * If we are ingesting cargo, we need to set the elevator 
+			 * to a negative power to counteract the arb feed forward
+			 */
 			if(manip.getLeftBumper()){
 				Elevator.setPower(-0.05, 0);
 			}else{
@@ -182,87 +182,39 @@ public class TeleOp {
 			}
 		}
 
+		/**
+		 * SEE THE ARRAY AT THE TOP OF FILE
+		 * NEED TO CHANGE THIS BEFORE EVERY MATCH OR
+		 * SETPOINTS WILL BE OFF
+		 */
+
 		if(manip.getYButton()){
+			//Cargo Setpoint Position
 			Elevator.setPosition(cargoSetpoint);
 		}
 
-		//Elevator Bottom
+		
 		if(manip.getPOV() == 180){
+			//Elevator setpoint for the bottom of the rocket
 			Elevator.setPosition(rocketSetpoints[0]);
 		}
 
-		//Elevator Middle
 		if(manip.getPOV() == 90){
+			//Elevator setpoint for the middle of the rocket
 			Elevator.setPosition(rocketSetpoints[1]);
 		}
 
-		//Elevator Top
 		if(manip.getPOV() == 0){
+			//Elevator setpoint for the bottom of the rocket
 			Elevator.setPosition(rocketSetpoints[2]);
 		}
 
-
-
-
-	
-		// if(manip.getPOV(1) != -1){
-		// 	//current % (setpoints length) returns index to next array
-		// 	//Elevator.setPosition(rocketSetpoints[((currentSetpoint++) % rocketSetpoints.length)]);
-		// 	Elevator.setPosition(2.0);
-		// }
-
-		// else if(manip.getPOV(2) != -1){
-		// 	Elevator.setPosition(29.332155227661133);
-		// }
-
-		// else if(manip.getPOV(3) != -1){
-		// 	Elevator.setPosition(52.0);
-		// }
-
+		if(Elevator.isLimitSwitchActive()){
+			Elevator.zeroElevator();
+		}
 		LEDs.setNeutral();
-
-		/**
-		 * ||====================================||
-		 * ||====================================||
-		 * || TESTING ONLY!! REMOVE BEFORE COMP! ||
-		 * ||====================================||
-		 * ||====================================||
-		 */
-		// double p = SmartDashboard.getNumber("P Gain", Constants.ELEVATOR_kP);
-		// double i = SmartDashboard.getNumber("I Gain", Constants.ELEVATOR_kI);
-		// double d = SmartDashboard.getNumber("D Gain", Constants.ELEVATOR_kD);
-		// double iz = SmartDashboard.getNumber("I Zone", Constants.ELEVATOR_kIZ);
-		// double ff = SmartDashboard.getNumber("Feed Forward", Constants.ELEVATOR_kFF);
-		// double maxOut = SmartDashboard.getNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
-		// double minOut = SmartDashboard.getNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
-
-		// double maxVel = SmartDashboard.getNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
-		// double minVel = SmartDashboard.getNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
-		// double maxAcc = SmartDashboard.getNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
-		// double loopErr = SmartDashboard.getNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
-		
-		
-		// if((p != Constants.ELEVATOR_kP)) { Elevator.setELEVATOR_P(p); Constants.ELEVATOR_kP = p; System.out.println("Changed Value to: " + p); }
-		// if((i != Constants.ELEVATOR_kI)) { Elevator.setELEVATOR_I(i); Constants.ELEVATOR_kI = i; }
-		// if((d != Constants.ELEVATOR_kD)) { Elevator.setELEVATOR_D(d); Constants.ELEVATOR_kD = d; }
-		// if((iz != Constants.ELEVATOR_kIZ)) { Elevator.setELEVATOR_IZ(iz); Constants.ELEVATOR_kIZ = iz; }
-		// if((ff != Constants.ELEVATOR_kFF)) { Elevator.setELEVATOR_FF(ff);; Constants.ELEVATOR_kFF = ff; }
-
-		// if((maxOut != Constants.ELEVATOR_MAX_OUTPUT) || (minOut != Constants.ELEVATOR_MIN_OUTPUT)) { 
-		// 	Elevator.setELEVATOR_KOUTPUT(minOut, maxOut);
-		// 	Constants.ELEVATOR_MIN_OUTPUT = minOut;
-		// 	Constants.ELEVATOR_MAX_OUTPUT = maxOut;
-		// }
-		
-		// if((maxVel  != Constants.ELEVATOR_MAX_VEL)) { Elevator.setELEVATOR_MAXVEL(maxVel); Constants.ELEVATOR_MAX_VEL = maxVel; }
-		// if((minVel  != Constants.ELEVATOR_MIN_VEL)) { Elevator.setELEVATOR_MINVEL(minVel); Constants.ELEVATOR_MIN_VEL = minVel; }
-		// if((maxAcc  != Constants.ELEVATOR_MAX_ACC)) { Elevator.setELEVATOR_MAXACC(maxAcc); Constants.ELEVATOR_MAX_ACC = maxAcc; }
-		// if((loopErr != Constants.ELEVATOR_ALLOWED_ERR)) { Elevator.setELEVATOR_MAXERR(loopErr); Constants.ELEVATOR_ALLOWED_ERR = loopErr; }
-
-		
-		// if(System.currentTimeMillis() - startTime > 10){
-		// 	System.out.println(System.currentTimeMillis() - startTime);
-		// }
+		//System.out.println(Elevator.isLimitSwitchActive());
+		System.out.println(Elevator.getPosition());
 
 	}
 }

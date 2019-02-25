@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 /**
@@ -25,7 +26,7 @@ import edu.wpi.first.wpilibj.Solenoid;
     private static CANEncoder elevatorEncoder;
 
     private static Solenoid lHatchesClaw, lHatchesFlip;
-
+    private static DigitalInput elevatorLimitSwitch;
     private static TalonSRX cargoHolderFront, cargoHolderBack;
     private static double setPosition = 0;
     public static Elevator getInstance(){
@@ -70,6 +71,8 @@ import edu.wpi.first.wpilibj.Solenoid;
         elevatorSparkRight.setSmartCurrentLimit(70);
 
         elevatorPIDController.setOutputRange(-0.7, 0.7);
+
+        elevatorLimitSwitch = new DigitalInput(Constants.LIMIT_SWITCH_ELEVATOR);
     }
 
     public static void setPosition(double elevatorPosition){
@@ -138,6 +141,11 @@ import edu.wpi.first.wpilibj.Solenoid;
         return elevatorEncoder.getVelocity();
     }
 
+    public static boolean isLimitSwitchActive(){
+        //Returns true if limit switch is active (since they're switched)
+        return (elevatorLimitSwitch.get() == false);
+    }
+    
     public static void zeroElevator(){
         elevatorEncoder.setPosition(0);
     }

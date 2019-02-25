@@ -37,13 +37,6 @@ public class Constants {
 	public static int ELEVATOR_SPARKMAX_LEFT = 12;
 	public static int ELEVATOR_SPARKMAX_RIGHT = 3;
 
-
-	// public static double ELEVATOR_kP = 0.00015;
-	// public static double ELEVATOR_kI = 0;
-	// public static double ELEVATOR_kD = 5;
-	// public static double ELEVATOR_kFF = 0.00025;
-	// public static double ELEVATOR_kIZ = 0;
-
 	
 	public static double ELEVATOR_kP = 0.1;
 	public static double ELEVATOR_kI = 0;
@@ -63,7 +56,7 @@ public class Constants {
 	public static double ELEVATOR_MIN_ACC = -100;
 
 	public static double ELEVATOR_ARB_FEED_FORWARD = 1.35;
-	//public static double ELEVATOR_ARB_FEED_FORWARD = 0;
+
 	public static  double ELEVATOR_ALLOWED_ERR = 1;
 
 	public static final int ELEVATOR_SMART_MOTION_SLOT = 0;
@@ -111,5 +104,7 @@ public class Constants {
 	public static final double CARGO_SHIP_SETPOINT_CARGO = 14;
 
 	public static double DRIVE_STRAIGHT = 0;
+
+	public static int LIMIT_SWITCH_ELEVATOR = 0;
 }
 
