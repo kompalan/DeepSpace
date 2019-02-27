@@ -93,7 +93,7 @@ public class DriveTrain{
         pidControllerLeftFront.setReference(powerLeft, ControlType.kDutyCycle);
     }
 
-    public static void arcadeDrive(double tur, double fwd) {
+    public static void arcadeDrive(double fwd, double tur) {
         //Arcade Drive      
 		drive(Utils.ensureRange(fwd + tur, -1d, 1d), Utils.ensureRange(fwd - tur, -1d, 1d));
     }

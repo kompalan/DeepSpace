@@ -74,7 +74,7 @@ public class Limelight {
 
 		Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
 
-		DriveTrain.arcadeDrive(output, 0);
+		//DriveTrain.arcadeDrive(Limelight.output, 0);
 		//DriveTrain.drive(Limelight.output, Limelight.output);
 	}
 	public static double getPipeline(){
@@ -98,5 +98,9 @@ public class Limelight {
 		}else{
 			DriveTrain.drive(Constants.LINEUP_FULL_SPEED, Constants.LINEUP_FULL_SPEED * Constants.DRIVE_STRAIGHT_CONSTANT);
 		}
+	}
+
+	public static void drive(){
+		DriveTrain.arcadeDrive(0.1, 0);
 	}
 }

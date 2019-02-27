@@ -5,11 +5,13 @@ public class TeleOp {
 	private static XBoxController driver;
 	private static TeleOp instance;
 	private static boolean wasStartPressed = false;
+	private static boolean wasBumperPressed = false;
 
 
-	private static double[] rocketSetpoints = {-3, 31.13533592224121, 55}; //Needs to be changed every match
-	private static double cargoSetpoint = 15.026803970336914; //Same with this one
-	
+	private static double[] rocketSetpoints = {-3, 26.13533592224121, 55}; //Needs to be changed every match
+	private static double cargoSetpoint = 13.5; //Same with this one
+	private static double humanPlayerCargo = 15;
+
 	public static TeleOp getInstance() {
 		if (instance == null)
 			instance = new TeleOp();
@@ -27,6 +29,7 @@ public class TeleOp {
 	public static void init(){
 
 		LEDs.setNeutral();
+		Elevator.zeroElevator();
 		
 	}
 
@@ -60,27 +63,25 @@ public class TeleOp {
 			Limelight.changePipeline(1);
 
 			if(Limelight.hasValidTargets()){
+				//Limelight.drive();
+				DriveTrain.setAllBreak();
 				Limelight.dumbLineup();
-				DriveTrain.driveStraight();
 
 				DriveTrain.arcadeDrive(
-					DriveTrain.output, 
+					Limelight.output, 
 					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
 				);
 				
-			}else{
-
-				//TODO: Set Rumbles Based on Whether We have a Target or Not
-				driver.setLeftRumble(0.0);
-				driver.setRightRumble(0.0);
+				wasBumperPressed = true;
 			}
-
 		}else{
 
 			//Normal Driver Pipeline in order to See the Field During Sandstorm
+			TeleOp.wasBumperPressed = false;
+			DriveTrain.setAllCoast();
 			Limelight.changePipeline(0);
 			DriveTrain.arcadeDrive(
-				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2), 
+				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2),
 				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
 			);
 		}
@@ -99,14 +100,14 @@ public class TeleOp {
 		 */
 		
 		if(manip.getLeftStickYAxis() < -0.15){
-			Ingestor.beltDown();
+			Ingestor.beltUp();
 			Ingestor.ingestCargo(1);
 			Elevator.setFrontHolderPower(1); //Front holder moves backward with "1" power
 			Elevator.setBackHolderPower(1); //Back holder always moves forward
 		}else if(manip.getLeftStickYAxis() > 0.1){
 			//If manip pushes joystick forward, both cargo holders need to move forward
-			Elevator.setFrontHolderPower(-1); //Front holder moveds forward with "-1" power
-			Elevator.setBackHolderPower(1); //Back holder always moves forward
+			Elevator.setFrontHolderPower(1); //Front holder moveds forward with "-1" power
+			Elevator.setBackHolderPower(-1); //Back holder always moves forward
 		}else{
 			//Belts, Rollerbar and Cargo Holders do not need to move when this joystick is not activated
 			Ingestor.beltStop();
@@ -159,17 +160,22 @@ public class TeleOp {
 		}
 
 
+		if(manip.getBButton()){
+			
+			Ingestor.beltDown();
+		}
+
+
 
 		if(manip.getAButton()){
 			//Manual Workaround due to absence of limit switch
 			Elevator.zeroElevator();
 		}
 
-
 		if(manip.getXButton()){
 			//If we get two balls in the cargo transport system
-			Ingestor.beltDown();
-			
+			Elevator.setPosition(humanPlayerCargo);
+
 		}else{
 			/**
 			 * If we are ingesting cargo, we need to set the elevator 
@@ -212,9 +218,10 @@ public class TeleOp {
 		if(Elevator.isLimitSwitchActive()){
 			Elevator.zeroElevator();
 		}
-		LEDs.setNeutral();
+
+		//LEDs.setNeutral();
 		//System.out.println(Elevator.isLimitSwitchActive());
-		System.out.println(Elevator.getPosition());
+		//System.out.println(Elevator.getPosition());
 
 	}
 }

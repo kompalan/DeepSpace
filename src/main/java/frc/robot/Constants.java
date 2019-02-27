@@ -5,7 +5,7 @@ public class Constants {
 	 * Use This File Only For Emergencies (like JSONConstants cannot find the config file)
 	 */
 	//Drive Train
-	public static final int DT_TALON_RIGHTFRONT = 2; // has encoder
+	public static final int DT_TALON_RIGHTFRONT = 2;
 	public static final int DT_TALON_RIGHTMIDDLE = 1;
 	public static final int DT_TALON_RIGHTBACK = 20;
 
@@ -28,9 +28,9 @@ public class Constants {
 
 	//Ingestor
 	//public static final int INGESTOR_TALON_CARGO = 7;
-	public static final int INGESTOR_TALON_CARGO = 10;
+	public static final int INGESTOR_TALON_CARGO = 7;
 	//public static final int INGESTOR_TALON_BELT = 11;
-	public static final int INGESTOR_TALON_BELT = 7;
+	public static final int INGESTOR_TALON_BELT = 10;
 	public static final double INGESTOR_BELT_POWER = -1;
 
 	//Elevator
@@ -90,7 +90,7 @@ public class Constants {
 
 
 	public static final int LED_CHANNEL = 1;
-	public static final double LIMELIGHT_P = 0.009;
+	public static final double LIMELIGHT_P = 0.005;
 	public static final double LIMELIGHT_I = 0;
 	public static final double LIMELIGHT_D = 0;
 
