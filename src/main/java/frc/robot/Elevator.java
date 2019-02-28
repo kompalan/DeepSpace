@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 /**
@@ -28,6 +29,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 
     private static TalonSRX cargoHolderFront, cargoHolderBack;
     private static double setPosition = 0;
+
+    private static DigitalInput elevatorLimitSwitch;
     public static Elevator getInstance(){
         if(instance == null){
             instance = new Elevator();
@@ -38,7 +41,7 @@ import edu.wpi.first.wpilibj.Solenoid;
     
 
     
-    public Elevator(){
+    public Elevator(){ //Initializes sparks, solenoids, and pid
         elevatorSparkRight = new CANSparkMax(Constants.ELEVATOR_SPARKMAX_RIGHT, MotorType.kBrushless);
         elevatorSparkLeft = new CANSparkMax(Constants.ELEVATOR_SPARKMAX_LEFT, MotorType.kBrushless);
         
@@ -64,29 +67,36 @@ import edu.wpi.first.wpilibj.Solenoid;
         elevatorPIDController.setSmartMotionAllowedClosedLoopError(Constants.ELEVATOR_ALLOWED_ERR, Constants.ELEVATOR_SMART_MOTION_SLOT);
         
         elevatorSparkLeft.follow(elevatorSparkRight, true);
-        elevatorEncoder.setPositionConversionFactor((12.0/56.0)*2.5*Math.PI);
-        elevatorEncoder.setVelocityConversionFactor((12.0/56.0)*2.5*Math.PI/60);
+        elevatorEncoder.setPositionConversionFactor((12.0/56.0)*2.5*Math.PI); //Converts encoder's postion based on wheel size
+        elevatorEncoder.setVelocityConversionFactor((12.0/56.0)*2.5*Math.PI/60); //Converts encoder's velocity based on wheel size
         elevatorSparkLeft.setSmartCurrentLimit(70);
         elevatorSparkRight.setSmartCurrentLimit(70);
+
+        elevatorLimitSwitch = new DigitalInput(0);
     }
 
-    public static void setPosition(double elevatorPosition){
+    //Sets the elevator's position
+    public static void setPosition(double elevatorPosition){ 
         elevatorPIDController.setReference(elevatorPosition, ControlType.kPosition, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
         Elevator.setPosition = elevatorPosition;
     }
 
-    public static double getPosition(){
+    //Gets the elevator's position
+    public static double getPosition(){ //
         return elevatorEncoder.getPosition();
     }
 
+    //Closes the claws
     public static void setClawIn(){
         lHatchesClaw.set(true);
     }
 
+    //Opens the claws
     public static void setClawOut(){
         lHatchesClaw.set(false);
     }
 
+    //
     public static void flipClawUp(){
         lHatchesFlip.set(true);
     }
@@ -142,6 +152,10 @@ import edu.wpi.first.wpilibj.Solenoid;
 
     public static void zeroElevator(){
         elevatorEncoder.setPosition(0);
+    }
+
+    public static boolean getElevatorLimitSwitch(){
+        return elevatorLimitSwitch.get() == false;
     }
 
     public static void setElevatorSmartMotion(double minVel, double maxVel, double minAcc, double maxAcc, double allowedErr){

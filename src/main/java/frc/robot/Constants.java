@@ -89,7 +89,7 @@ public class Constants {
 
 
 	public static final int LED_CHANNEL = 1;
-	public static final double LIMELIGHT_P = 0.001;
+	public static final double LIMELIGHT_P = 0.005;
 	public static final double LIMELIGHT_I = 0;
 	public static final double LIMELIGHT_D = 0;
 
@@ -101,5 +101,8 @@ public class Constants {
 
 	public static final double CARGO_SHIP_SETPOINT_HATCH = 13;
 	public static final double CARGO_SHIP_SETPOINT_CARGO = 14;
+	public static final int ELEVATOR_LIMIT_SWITCH = 0;
+
+
 }
 

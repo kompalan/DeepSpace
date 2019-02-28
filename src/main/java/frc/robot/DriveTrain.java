@@ -74,7 +74,7 @@ public class DriveTrain implements PIDOutput{
         pidControllerLeftFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
         pidControllerRightFront.setOutputRange(Constants.kMinOutput, Constants.kMaxOutput);
 
-        DriveTrain.setCoast();
+        DriveTrain.setAllCoast();
 
         rightMotorMiddle.follow(rightMotorFront);
         rightMotorBack.follow(rightMotorFront);
@@ -162,7 +162,7 @@ public class DriveTrain implements PIDOutput{
         // }
 	}
 
-    public static void setCoast(){
+    public static void setAllCoast(){
         rightMotorFront.setIdleMode(IdleMode.kCoast);
         rightMotorMiddle.setIdleMode(IdleMode.kCoast);
         rightMotorBack.setIdleMode(IdleMode.kCoast);
@@ -170,6 +170,16 @@ public class DriveTrain implements PIDOutput{
         leftMotorFront.setIdleMode(IdleMode.kCoast);
         leftMotorMiddle.setIdleMode(IdleMode.kCoast);
         leftMotorBack.setIdleMode(IdleMode.kCoast);
+    }
+
+    public static void setAllBrake(){
+        rightMotorFront.setIdleMode(IdleMode.kBrake);
+        rightMotorMiddle.setIdleMode(IdleMode.kBrake);
+        rightMotorBack.setIdleMode(IdleMode.kBrake);
+
+        leftMotorFront.setIdleMode(IdleMode.kBrake);
+        leftMotorMiddle.setIdleMode(IdleMode.kBrake);
+        leftMotorBack.setIdleMode(IdleMode.kBrake); 
     }
 
 

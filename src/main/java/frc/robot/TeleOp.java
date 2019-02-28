@@ -10,6 +10,8 @@ public class TeleOp {
 	private static TeleOp instance;
 	private static double[] rocketSetpoints = {0, -26.12649917602539, -53.45470428466797};
 	private static double cargoSetpoints = -17.675899505615234;
+	private static double humanPlayerCargo = -15;
+
 	private static int currentSetpoint = 0;
 	private static Timer clock;
 	private static boolean wasStartPressed = false;
@@ -27,68 +29,6 @@ public class TeleOp {
 		
 
 	public static void init(){
-		// SmartDashboard.putNumber("P Gain", Constants.ELEVATOR_kP);
-		// SmartDashboard.putNumber("I Gain", Constants.ELEVATOR_kI);
-		// SmartDashboard.putNumber("D Gain", Constants.ELEVATOR_kD);
-		// SmartDashboard.putNumber("I Zone", Constants.ELEVATOR_kIZ);
-		// SmartDashboard.putNumber("Feed Forward", Constants.ELEVATOR_kFF);
-		// SmartDashboard.putNumber("Max Output", Constants.ELEVATOR_MAX_OUTPUT);
-		// SmartDashboard.putNumber("Min Output", Constants.ELEVATOR_MIN_OUTPUT);
-
-		// SmartDashboard.putNumber("Max Velocity", Constants.ELEVATOR_MAX_VEL);
-		// SmartDashboard.putNumber("Min Velocity", Constants.ELEVATOR_MIN_VEL);
-		// SmartDashboard.putNumber("Max Acceleration", Constants.ELEVATOR_MAX_ACC);
-		// SmartDashboard.putNumber("Allowed Loop Error", Constants.ELEVATOR_ALLOWED_ERR);
-		//clock = new Timer();
-
-		// Thread thread1 = new Thread(() -> {
-		// 	while(!Thread.interrupted()){
-
-
-		// 		// if(Math.abs(DriveTrain.getAvgVelocity()) > 3500d && !driver.getLeftBumper() && !driver.getRightBumper() && !DriveTrain.getShifted()){
-		// 		// 	DriveTrain.shiftUp();
-
-		// 		// 	try{
-		// 		// 		Thread.sleep(3000);
-		// 		// 	}catch(InterruptedException ie){
-		// 		// 		ie.printStackTrace();
-		// 		// 		System.exit(-1);
-		// 		// 	}
-		// 		// }else{
-		// 		// 	DriveTrain.shiftDown();
-		// 		// }
-
-		// 		//Diagnostics.pushElevatorDiagnostics();
-		// 		//Diagnostics.pushIngestorDiagnostics();
-		// 		//Diagnostics.pushDriveTrainDiagnostics();
-		// 		try{
-		// 			Thread.sleep(100);
-		// 		}catch(InterruptedException ie){
-		// 			ie.printStackTrace();
-		// 			return;
-		// 		}
-		// 	}
-		// });
-
-		// Thread thread2 = new Thread(() -> {
-		// 	while(!Thread.interrupted()){
-		// 		long startTime = System.currentTimeMillis();
-		// 		Diagnostics.pushElevatorDiagnostics();
-		// 		try{
-		// 			Thread.sleep(20);
-		// 		}catch(InterruptedException ie){
-		// 			ie.printStackTrace();
-		// 			return;
-		// 		}
-		// 	}
-		// });
-
-		// //thread1.setPriority(1);
-		// thread2.setPriority(1);
-
-		// //thread1.start();
-		// thread2.start();
-
 		LEDs.setNeutral();
 		
 	}
@@ -114,45 +54,25 @@ public class TeleOp {
 			Limelight.changePipeline(1);
 
 			if(Limelight.hasValidTargets()){
-				if(driver.getLeftBumper()){
-					
-					if(Limelight.getX() <= 6d && Limelight.getX() >= -6d){
-						//Elevator.flipClawUp();
-						DriveTrain.arcadeDrive(0, 0.2);
-					}else{
-						Limelight.dumbLineup();
-					}
-					//DriveTrain.arcadeDrive(0, 0.3);
-				}else{
-					if(DriveTrain.ispidEnabled()){
-						DriveTrain.pidDisable();
-					}
-					//Elevator.flipClawDown();
-					DriveTrain.arcadeDrive(
-						Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2), 
-						Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
-					);
-				}
+				DriveTrain.setAllBrake();
+				Limelight.dumbLineup();
+
+				DriveTrain.arcadeDrive(Limelight.output, Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2));
 				
-			}else{
-				//DriveTrain.pidDisable();
-				//Limelight.changePipeline(1);
-				driver.setLeftRumble(0.0);
-				driver.setRightRumble(0.0);
-				if(driver.getLeftBumper()){
-					//DriveTrain.arcadeDrive(0, 0.);
-				}
-				else{
-
-
-				}
+				
 			}
+
 		}else{
+
+			//Normal Driver Pipeline in order to See the Field During Sandstorm
+			DriveTrain.setAllCoast();
+			Limelight.changePipeline(0);
 			DriveTrain.arcadeDrive(
 				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2), 
 				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
 			);
 		}
+
 
 	
 		/**
@@ -217,6 +137,8 @@ public class TeleOp {
 
 		if(manip.getBButton()){
 			//Elevator.setPosition(30);
+			Ingestor.beltDown();
+
 		}else{
 			if(manip.getLeftBumper()){
 				Elevator.setPower(-0.05, 0);
@@ -226,11 +148,12 @@ public class TeleOp {
 		}
 
 		if(manip.getXButton()){
-			Ingestor.beltDown();
+			//Ingestor.beltDown();
+			Elevator.setPosition(TeleOp.humanPlayerCargo);
 		}
 
-		if(manip.getAButton()){
-			Elevator.resetEncs();
+		if(manip.getBButton()){
+			Ingestor.beltDown();
 		}
 		// CargoShip
 		if(manip.getYButton()){
@@ -259,6 +182,9 @@ public class TeleOp {
 		LEDs.setNeutral();
 		//System.out.println("loop time: " + (System.currentTimeMillis() - startTime));
 		
+		// if(Elevator.getElevatorLimitSwitch()){
+		// 	Elevator.zeroElevator();
+		// }
 
 		/**
 		 * ||====================================||

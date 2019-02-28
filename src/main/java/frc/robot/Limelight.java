@@ -13,6 +13,8 @@ public class Limelight {
 	private static double m_LimelightDriveCommand = 0.0;
 	private static double m_LimelightSteerCommand = 0.0;
 
+	public static double error, integral, derivative, previous_error, output;
+
 	public static void testFeed(){
 		double x = table.getEntry("tx").getDouble(0.0);
 		double y = table.getEntry("ty").getDouble(0.0);		
@@ -61,22 +63,23 @@ public class Limelight {
 		}
 	}
 
+	public static void PID(double setpoint){
+		Limelight.error = setpoint - DriveTrain.getAHRS();
+		Limelight.integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+		
+        derivative = (error - Limelight.previous_error) / .02;
+
+		Limelight.previous_error = Limelight.error;
+	
+		Limelight.output = Constants.LIMELIGHT_P*error + Constants.LIMELIGHT_I*Limelight.integral + Constants.LIMELIGHT_D*Limelight.derivative;
+	}
+
 	public static void dumbLineup(){
 		Limelight.testFeed();
-		double x = Math.abs(Limelight.getX()) - 5; //this is like the "error" term
 
-		double power = x * 0.03;
-		if(Limelight.getX() >= 5d || Limelight.getX() <= -5d){
-			if(Limelight.getX() > 5){
-			//	System.out.println("Should Be Moving Right");
-				DriveTrain.arcadeDrive(power, 0);
-			}else if(Limelight.getX() < -5){
-			//	System.out.println("Should Be Moving Left");
-				DriveTrain.arcadeDrive(-power, 0);
-				
-			}
-		}
-		
+		Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
+
+		//DriveTrain.arcadeDrive(Limelight.output, 0);
 	}
 
 	public static double getPipeline(){
