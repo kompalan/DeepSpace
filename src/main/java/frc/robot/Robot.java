@@ -26,6 +26,7 @@ public class Robot extends TimedRobot{
     LEDs.getInstance();
 
     TeleOp.init();
+    Elevator.setPosition(0);
   }
 
   @Override
@@ -56,5 +57,7 @@ public class Robot extends TimedRobot{
     
     //DriveTrain.pidDisable();
     //Limelight.dumbLineup();
+    Limelight.changePipeline(0);
+    TeleOp.done();
   }
 }

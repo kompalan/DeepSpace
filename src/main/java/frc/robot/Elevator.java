@@ -38,7 +38,10 @@ import edu.wpi.first.wpilibj.Solenoid;
     }
     
 
-    
+    /**
+     * Initializes Spark Maxes plus the PID Controller that controls the position of the Elevator
+     * Also initializes Max Acceleration, Min Acceleration, Max Velocity etc. for Motion Profiling
+     */
     public Elevator(){
         elevatorSparkRight = new CANSparkMax(Constants.ELEVATOR_SPARKMAX_RIGHT, MotorType.kBrushless);
         elevatorSparkLeft = new CANSparkMax(Constants.ELEVATOR_SPARKMAX_LEFT, MotorType.kBrushless);
@@ -75,31 +78,38 @@ import edu.wpi.first.wpilibj.Solenoid;
         elevatorLimitSwitch = new DigitalInput(Constants.LIMIT_SWITCH_ELEVATOR);
     }
 
+    //Position Diagnostic Information
     public static void setPosition(double elevatorPosition){
         elevatorPIDController.setReference(elevatorPosition, ControlType.kPosition, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
         Elevator.setPosition = elevatorPosition;
     }
 
+    //Gets the Position of the Elevator
     public static double getPosition(){
         return elevatorEncoder.getPosition();
     }
 
+    //Sets the claw to an enabled state
     public static void setClawIn(){
         lHatchesClaw.set(true);
     }
 
+    //Sets the claw to a disabled state
     public static void setClawOut(){
         lHatchesClaw.set(false);
     }
 
+    //Flips the claw up
     public static void flipClawUp(){
         lHatchesFlip.set(true);
     }
 
+    //Gets the state of the claw solenoid
     public static boolean getFlipped(){
         return lHatchesFlip.get();
     }
 
+    //Sets the claw solenoid to an enabled state
     public static void flipClawDown(){
         lHatchesFlip.set(false);
     }
@@ -146,6 +156,7 @@ import edu.wpi.first.wpilibj.Solenoid;
         return (elevatorLimitSwitch.get() == false);
     }
     
+    //Sets elevator position to zero
     public static void zeroElevator(){
         elevatorEncoder.setPosition(0);
     }

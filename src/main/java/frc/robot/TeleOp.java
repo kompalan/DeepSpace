@@ -120,6 +120,8 @@ public class TeleOp {
 		if(manip.getRightBumper()){
 			Elevator.setClawIn();
 			LEDs.setLime();
+			driver.setLeftRumble(1.0);
+			driver.setRightRumble(1.0);
 		}else{
 			//Set Default to Out (Does not need to be latching)
 			Elevator.setClawOut();
@@ -223,5 +225,11 @@ public class TeleOp {
 		//System.out.println(Elevator.isLimitSwitchActive());
 		//System.out.println(Elevator.getPosition());
 
+		
+	}
+
+	public static void done(){
+		driver.setLeftRumble(0.0);
+		driver.setRightRumble(0.0);
 	}
 }

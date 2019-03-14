@@ -81,6 +81,7 @@ public class Limelight {
 		NetworkTableEntry pipeline = table.getEntry("pipeline");
 		return pipeline.getDouble(-1);
 	}
+	
 
 	public static void dock(){
 		double distance = Utils.distFrom(Utils.degToRad(Limelight.getX()),Utils.degToRad(Limelight.getY()));

@@ -90,9 +90,9 @@ public class Constants {
 
 
 	public static final int LED_CHANNEL = 1;
-	public static final double LIMELIGHT_P = 0.005;
+	public static final double LIMELIGHT_P = 0.009;
 	public static final double LIMELIGHT_I = 0;
-	public static final double LIMELIGHT_D = 0;
+	public static final double LIMELIGHT_D = 0.000;
 
 
 	public static final double ELEVATOR_SETPOINT_ROCKET_LOW = 13;
