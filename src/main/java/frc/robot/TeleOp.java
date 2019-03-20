@@ -125,7 +125,8 @@ public class TeleOp {
 		}else{
 			//Set Default to Out (Does not need to be latching)
 			Elevator.setClawOut();
-			
+			driver.setLeftRumble(0);
+			driver.setRightRumble(0);
 		}
 
 		//Latching Trigger to Flipping Up Elevator Claw Thing
