@@ -69,10 +69,15 @@ public class TeleOp {
 
 				DriveTrain.arcadeDrive(
 					Limelight.output, 
-					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
 				);
 				
 				wasBumperPressed = true;
+			}else{
+				DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT), 
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
+				);
 			}
 		}else{
 
@@ -82,13 +87,13 @@ public class TeleOp {
 			Limelight.changePipeline(0);
 				if(driver.getRightTriggerAxis()>0.1){
 					DriveTrain.arcadeDrive(
-					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2)*0.3,
-					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)*0.3
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)*0.3
 				);
 				}else{
 					DriveTrain.arcadeDrive(
-					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2),
-					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
 				);
 				}
 			

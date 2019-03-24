@@ -106,5 +106,8 @@ public class Constants {
 	public static double DRIVE_STRAIGHT = 0;
 
 	public static int LIMIT_SWITCH_ELEVATOR = 0;
+
+	public static double TURN_EXPO_CONSTANT = 3;
+	public static double DRIVE_EXPO_CONSTANT = 1.2;
 }
 
