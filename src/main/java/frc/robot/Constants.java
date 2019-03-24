@@ -77,8 +77,8 @@ public class Constants {
 	public static final double kMinOutput = -1.0;
 
 	public static final int SOLENOID_LHATCHES_CLOSE = 0;
-	public static final int SOLENOID_LHATCHES_DEPLOY = 1;
-	public static final int SOLENOID_SHIFTER = 2;
+	public static final int SOLENOID_LHATCHES_DEPLOY = 4;
+	public static final int SOLENOID_SHIFTER = 5;
 	public static final int SOLENOID_ROLLERBAR = 3;
 
 	public static final int[] SOLENOID_4_5 = {4, 5};
