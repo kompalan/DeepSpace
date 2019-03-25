@@ -240,6 +240,10 @@ public class TeleOp {
 			LEDs.setLime();
 		}else if(manip.getLeftBumper()){
 			LEDs.setViolet();
+		}else if(driver.getRightBumper() && Limelight.hasValidTargets()){
+			LEDs.setRedStrobe();
+		}else if(driver.getRightBumper() && !Limelight.hasValidTargets()){
+			LEDs.setWhiteStrobe();
 		}else{
 			LEDs.setNeutral();
 		}
