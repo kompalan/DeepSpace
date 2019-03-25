@@ -53,6 +53,7 @@ public class TeleOp {
 		
 		/**
 		 * If we get Left Bumper, change the pipeline to the "vision target pipeline" (1)
+		 * along with "driver vision" to enable targeting (0) and stop acting purely as a camera
 		 * Then Check if we have valid targets to line up to
 		 * Then lineup ONCE and drive straight
 		 * 
@@ -66,7 +67,7 @@ public class TeleOp {
 				//Limelight.drive();
 				//DriveTrain.setAllBreak();
 				Limelight.dumbLineup();
-
+				Limelight.driverVision(0);
 				DriveTrain.arcadeDrive(
 					Limelight.output, 
 					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
@@ -81,10 +82,11 @@ public class TeleOp {
 			}
 		}else{
 
-			//Normal Driver Pipeline in order to See the Field During Sandstorm
+			//Normal Driver Pipeline along with "driver vision" in order to see the Field During Sandstorm
 			TeleOp.wasBumperPressed = false;
 			DriveTrain.setAllCoast();
 			Limelight.changePipeline(0);
+			Limelight.driverVision(1);
 				if(driver.getRightTriggerAxis()>0.1){
 					DriveTrain.arcadeDrive(
 					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
