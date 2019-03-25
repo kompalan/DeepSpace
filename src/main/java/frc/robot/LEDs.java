@@ -24,7 +24,7 @@ public class LEDs {
         leds = new Spark(Constants.LED_CHANNEL);
         colorArray = new HashMap<String, Double>();
 
-        colorArray.put("Lime", 0.73);
+        colorArray.put("Lime", 0.77);
         colorArray.put("Orange", 0.65);
         colorArray.put("Violet", 0.91);
         colorArray.put("Rainbow", -0.99);

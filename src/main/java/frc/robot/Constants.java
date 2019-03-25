@@ -89,7 +89,7 @@ public class Constants {
 	public static final int XBOX_MANIP = 1;
 
 
-	public static final int LED_CHANNEL = 1;
+	public static final int LED_CHANNEL = 0;
 	public static final double LIMELIGHT_P = 0.009;
 	public static final double LIMELIGHT_I = 0;
 	public static final double LIMELIGHT_D = 0.000;

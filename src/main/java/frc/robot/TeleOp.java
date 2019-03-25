@@ -8,7 +8,7 @@ public class TeleOp {
 	private static boolean wasBumperPressed = false;
 
 
-	private static double[] rocketSetpoints = {-3, 26.13533592224121, 55}; //Needs to be changed every match
+	private static double[] rocketSetpoints = {-3, 26.6, 55}; //Needs to be changed every match
 	private static double cargoSetpoint = 13.5; //Same with this one
 	private static double humanPlayerCargo = 15;
 
@@ -64,7 +64,7 @@ public class TeleOp {
 
 			if(Limelight.hasValidTargets()){
 				//Limelight.drive();
-				DriveTrain.setAllBreak();
+				//DriveTrain.setAllBreak();
 				Limelight.dumbLineup();
 
 				DriveTrain.arcadeDrive(
@@ -162,6 +162,7 @@ public class TeleOp {
 		//Put Ingestor Down In Order to Grab Cargo
 		if(manip.getLeftBumper()){
 			Ingestor.ingestorDown();
+			LEDs.setViolet();
 		}else{
 			Ingestor.ingestorUp();
 		}
@@ -235,7 +236,13 @@ public class TeleOp {
 			Elevator.zeroElevator();
 		}
 
-		//LEDs.setNeutral();
+		if(manip.getRightBumper()){
+			LEDs.setLime();
+		}else if(manip.getLeftBumper()){
+			LEDs.setViolet();
+		}else{
+			LEDs.setNeutral();
+		}
 		//System.out.println(Elevator.isLimitSwitchActive());
 		//System.out.println(Elevator.getPosition());
 
@@ -246,4 +253,5 @@ public class TeleOp {
 		driver.setLeftRumble(0.0);
 		driver.setRightRumble(0.0);
 	}
+
 }
