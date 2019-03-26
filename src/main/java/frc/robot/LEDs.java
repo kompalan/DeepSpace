@@ -24,11 +24,13 @@ public class LEDs {
         leds = new Spark(Constants.LED_CHANNEL);
         colorArray = new HashMap<String, Double>();
 
-        colorArray.put("Lime", 0.73);
+        colorArray.put("Lime", 0.77);
         colorArray.put("Orange", 0.65);
         colorArray.put("Violet", 0.91);
         colorArray.put("Rainbow", -0.99);
         colorArray.put("Larson Scanner", -0.01); 
+        colorArray.put("Red Strobe", -0.11);
+        colorArray.put("White Strobe", -0.05);
     }
 
     public static void setOrange(){
@@ -50,4 +52,12 @@ public class LEDs {
     public static void setViolet(){
         leds.set(colorArray.get("Violet"));
     }
+
+    public static void setRedStrobe(){
+        leds.set(colorArray.get("Red Strobe"));
+    }
+    public static void setWhiteStrobe(){
+        leds.set(colorArray.get("White Strobe"));
+    }
+
 }

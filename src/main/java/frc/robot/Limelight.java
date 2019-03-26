@@ -72,6 +72,12 @@ public class Limelight {
 		pipeline.setValue(pipeline_num);
 	}
 	
+	//0 enables vision processing to target
+	//1 disables vision processing and increases exposure to act purely as a camera
+	public static void driverVision(int driver_control){
+		NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(driver_control);
+	}
+	
 	public static double getContourArea(){
 		return topTable.getEntry("ta0").getDouble(0.0);
 	}

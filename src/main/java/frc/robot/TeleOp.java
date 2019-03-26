@@ -8,7 +8,7 @@ public class TeleOp {
 	private static boolean wasBumperPressed = false;
 
 
-	private static double[] rocketSetpoints = {-3, 24.13533592224121, 55}; //Needs to be changed every match
+	private static double[] rocketSetpoints = {-3, 26.6, 55}; //Needs to be changed every match
 	private static double cargoSetpoint = 13.5; //Same with this one
 	private static double humanPlayerCargo = 15;
 
@@ -53,6 +53,7 @@ public class TeleOp {
 		
 		/**
 		 * If we get Left Bumper, change the pipeline to the "vision target pipeline" (1)
+		 * along with "driver vision" to enable targeting (0) and stop acting purely as a camera
 		 * Then Check if we have valid targets to line up to
 		 * Then lineup ONCE and drive straight
 		 * 
@@ -113,15 +114,24 @@ public class TeleOp {
 			
 		}else{
 
-			//Normal Driver Pipeline in order to See the Field During Sandstorm
+			//Normal Driver Pipeline along with "driver vision" in order to see the Field During Sandstorm
 			TeleOp.wasBumperPressed = false;
 			DriveTrain.setAllCoast();
 			Limelight.changePipelineTop(0);
 			Limelight.changePipelineBottom(0);
-			DriveTrain.arcadeDrive(
-				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2),
-				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
-			);
+			Limelight.driverVision(1);
+				if(driver.getRightTriggerAxis()>0.1){
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)*0.3
+				);
+				}else{
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
+				);
+				}
+			
 		}
 
 	
@@ -163,8 +173,8 @@ public class TeleOp {
 		}else{
 			//Set Default to Out (Does not need to be latching)
 			Elevator.setClawOut();
-			driver.setRightRumble(0.0);
-			driver.setLeftRumble(0.0);
+			driver.setLeftRumble(0);
+			driver.setRightRumble(0);
 		}
 
 		//Latching Trigger to Flipping Up Elevator Claw Thing
@@ -187,6 +197,7 @@ public class TeleOp {
 		//Put Ingestor Down In Order to Grab Cargo
 		if(manip.getLeftBumper()){
 			Ingestor.ingestorDown();
+			LEDs.setViolet();
 		}else{
 			Ingestor.ingestorUp();
 		}
@@ -261,7 +272,17 @@ public class TeleOp {
 			
 		}
 
-		//LEDs.setNeutral();
+		if(manip.getRightBumper()){
+			LEDs.setLime();
+		}else if(manip.getLeftBumper()){
+			LEDs.setViolet();
+		}else if(driver.getRightBumper() && Limelight.hasValidTargets()){
+			LEDs.setRedStrobe();
+		}else if(driver.getRightBumper() && !Limelight.hasValidTargets()){
+			LEDs.setWhiteStrobe();
+		}else{
+			LEDs.setNeutral();
+		}
 		//System.out.println(Elevator.isLimitSwitchActive());
 		//System.out.println(Elevator.getPosition());
 
@@ -272,4 +293,5 @@ public class TeleOp {
 		driver.setLeftRumble(0.0);
 		driver.setRightRumble(0.0);
 	}
+
 }

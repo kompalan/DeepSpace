@@ -77,8 +77,8 @@ public class Constants {
 	public static final double kMinOutput = -1.0;
 
 	public static final int SOLENOID_LHATCHES_CLOSE = 0;
-	public static final int SOLENOID_LHATCHES_DEPLOY = 1;
-	public static final int SOLENOID_SHIFTER = 2;
+	public static final int SOLENOID_LHATCHES_DEPLOY = 4;
+	public static final int SOLENOID_SHIFTER = 5;
 	public static final int SOLENOID_ROLLERBAR = 3;
 
 	public static final int[] SOLENOID_4_5 = {4, 5};
@@ -89,7 +89,7 @@ public class Constants {
 	public static final int XBOX_MANIP = 1;
 
 
-	public static final int LED_CHANNEL = 1;
+	public static final int LED_CHANNEL = 0;
 	public static final double LIMELIGHT_P = 0.009;
 	public static final double LIMELIGHT_I = 0;
 	public static final double LIMELIGHT_D = 0.000;
@@ -106,5 +106,8 @@ public class Constants {
 	public static double DRIVE_STRAIGHT = 0;
 
 	public static int LIMIT_SWITCH_ELEVATOR = 0;
+
+	public static double TURN_EXPO_CONSTANT = 3;
+	public static double DRIVE_EXPO_CONSTANT = 1.2;
 }
 
