@@ -200,6 +200,13 @@ public class DriveTrain{
         hyro.reset();
     }
 
+    public static int getLeftEncPos(){
+        return (int) encoderLeftFront.getPosition();
+    }
+
+    public static int getRightEncPos(){
+        return (int) encoderRightFront.getPosition();
+    }
     //Diagnostics
     public static double getRightMotorFrontTemp(){
         return rightMotorFront.getMotorTemperature();

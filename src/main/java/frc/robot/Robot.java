@@ -8,16 +8,26 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Waypoint;
+import jaci.pathfinder.followers.EncoderFollower;
+import jaci.pathfinder.modifiers.TankModifier;
+
 
 public class Robot extends TimedRobot{
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
+  Trajectory rocket;
+  Trajectory left;
+  Trajectory right;
+  public static double wheelbase_width = 0.7239; //meters
+  public static double distance = 5.334; //meters
+  public static double wheel_diameter = 0.1524; //meters
+  //public TankModifier modifier;
+  public RoboPath rocketPath;
 
   @Override
   public void robotInit() {
-    // JSONConstants.setFilePath(this.ROBOT_FILE_PATH);
-    // JSONConstants.populateMap();
-    // JSONConstants.test();
-
     DriveTrain.getInstance();
     TeleOp.getInstance();
     Elevator.getInstance();
@@ -27,6 +37,8 @@ public class Robot extends TimedRobot{
 
     TeleOp.init();
     Elevator.setPosition(0);
+    DriveTrain.resetAHRS();
+    rocketPath = new RoboPath();
   }
 
   @Override
@@ -49,6 +61,8 @@ public class Robot extends TimedRobot{
   @Override
   public void teleopPeriodic() {
     TeleOp.run();
+    System.out.println(DriveTrain.getLeftEncPos());
+
   }
 
   @Override
@@ -57,7 +71,29 @@ public class Robot extends TimedRobot{
     
     //DriveTrain.pidDisable();
     //Limelight.dumbLineup();
-    Limelight.changePipeline(0);
+    Limelight.changePipelineBottom(0);
+    Limelight.changePipelineTop(0);
     TeleOp.done();
+    //right.length();
+    //int lengthRight = right.length();
+    
   }
+
+
+  public void testInit(){
+        
+    DriveTrain.resetAHRS();
+    rocketPath.generateRocketTraj();
+
+  }
+
+  public void testPeriodic(){
+    // right1.calculate(DriveTrain.getRightEncPos());
+    double[] powers = rocketPath.getPower();
+
+    DriveTrain.drive(powers[0], powers[1]);
+
+  }
+
+  
 }

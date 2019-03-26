@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - RoboPath",
+      "request": "launch",
+      "mainClass": "frc.robot.RoboPath",
+      "projectName": "DeepSpace"
+    },
+    {
+      "type": "java",
       "name": "CodeLens (Launch) - Tank",
       "request": "launch",
       "mainClass": "Tank",

@@ -8,7 +8,7 @@ public class TeleOp {
 	private static boolean wasBumperPressed = false;
 
 
-	private static double[] rocketSetpoints = {-3, 26.13533592224121, 55}; //Needs to be changed every match
+	private static double[] rocketSetpoints = {-3, 24.13533592224121, 55}; //Needs to be changed every match
 	private static double cargoSetpoint = 13.5; //Same with this one
 	private static double humanPlayerCargo = 15;
 
@@ -60,26 +60,64 @@ public class TeleOp {
 		 * simply needs a little help.
 		 */
 		if(driver.getLeftBumper()){
-			Limelight.changePipeline(1);
-
-			if(Limelight.hasValidTargets()){
-				//Limelight.drive();
-				DriveTrain.setAllBreak();
-				Limelight.dumbLineup();
-
-				DriveTrain.arcadeDrive(
-					Limelight.output, 
-					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
-				);
-				
-				wasBumperPressed = true;
+			
+			if(Elevator.getPosition() > 5 && Elevator.getPosition() < 35){
+				Limelight.changePipelineBottom(1);
+				if(Limelight.hasValidTargets()){
+					//Limelight.drive();
+	
+	
+					DriveTrain.setAllBreak();
+					Limelight.dumbLineupBottom();
+	
+					if(driver.getRightStickYAxis() > 0.1){
+						DriveTrain.arcadeDrive(
+							Limelight.output, 
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+						);
+					}else if(driver.getRightStickYAxis() < -0.1){
+						DriveTrain.arcadeDrive(
+							Limelight.output, 
+							Utils.expoDeadzone(driver.getRightStickYAxis() * 0.30, 0.1, 1.2)
+						);
+					}
+	
+					
+					wasBumperPressed = true;
+				}
+			}else{
+				Limelight.changePipelineTop(1);
+				if(Limelight.hasValidTargets()){
+					//Limelight.drive();
+	
+	
+					DriveTrain.setAllBreak();
+					Limelight.dumbLineupTop();
+	
+					if(driver.getRightStickYAxis() > 0.1){
+						DriveTrain.arcadeDrive(
+							Limelight.output, 
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+						);
+					}else if(driver.getRightStickYAxis() < -0.1){
+						DriveTrain.arcadeDrive(
+							Limelight.output, 
+							Utils.expoDeadzone(driver.getRightStickYAxis() * 0.30, 0.1, 1.2)
+						);
+					}
+	
+					
+					wasBumperPressed = true;
+				}
 			}
+			
 		}else{
 
 			//Normal Driver Pipeline in order to See the Field During Sandstorm
 			TeleOp.wasBumperPressed = false;
 			DriveTrain.setAllCoast();
-			Limelight.changePipeline(0);
+			Limelight.changePipelineTop(0);
+			Limelight.changePipelineBottom(0);
 			DriveTrain.arcadeDrive(
 				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2),
 				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
@@ -125,7 +163,8 @@ public class TeleOp {
 		}else{
 			//Set Default to Out (Does not need to be latching)
 			Elevator.setClawOut();
-			
+			driver.setRightRumble(0.0);
+			driver.setLeftRumble(0.0);
 		}
 
 		//Latching Trigger to Flipping Up Elevator Claw Thing
@@ -219,6 +258,7 @@ public class TeleOp {
 
 		if(Elevator.isLimitSwitchActive()){
 			Elevator.zeroElevator();
+			
 		}
 
 		//LEDs.setNeutral();
