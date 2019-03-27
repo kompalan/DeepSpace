@@ -64,7 +64,8 @@ public class TeleOp {
 			
 			if(Elevator.getPosition() > 5 && Elevator.getPosition() < 35){
 				Limelight.changePipelineBottom(1);
-				if(Limelight.hasValidTargets()){
+				//Limelight.driverVisionBottom(0);
+				if(Limelight.bottomHasValidTargets()){
 					//Limelight.drive();
 	
 	
@@ -79,16 +80,21 @@ public class TeleOp {
 					}else if(driver.getRightStickYAxis() < -0.1){
 						DriveTrain.arcadeDrive(
 							Limelight.output, 
-							Utils.expoDeadzone(driver.getRightStickYAxis() * 0.30, 0.1, 1.2)
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
 						);
 					}
 	
 					
 					wasBumperPressed = true;
-				}
+				}else{
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT));
+				};
 			}else{
 				Limelight.changePipelineTop(1);
-				if(Limelight.hasValidTargets()){
+				//Limelight.driverVisionTop(0);
+				if(Limelight.topHasValidTargets()){
 					//Limelight.drive();
 	
 	
@@ -98,18 +104,22 @@ public class TeleOp {
 					if(driver.getRightStickYAxis() > 0.1){
 						DriveTrain.arcadeDrive(
 							Limelight.output, 
-							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
 						);
 					}else if(driver.getRightStickYAxis() < -0.1){
 						DriveTrain.arcadeDrive(
 							Limelight.output, 
-							Utils.expoDeadzone(driver.getRightStickYAxis() * 0.30, 0.1, 1.2)
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
 						);
 					}
 	
 					
 					wasBumperPressed = true;
-				}
+				}else{
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT));
+				};
 			}
 			
 		}else{
@@ -119,7 +129,8 @@ public class TeleOp {
 			DriveTrain.setAllCoast();
 			Limelight.changePipelineTop(0);
 			Limelight.changePipelineBottom(0);
-			Limelight.driverVision(1);
+			//Limelight.driverVisionTop(1);
+			//Limelight.driverVisionBottom(0);
 				if(driver.getRightTriggerAxis()>0.1){
 					DriveTrain.arcadeDrive(
 					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
@@ -276,9 +287,9 @@ public class TeleOp {
 			LEDs.setLime();
 		}else if(manip.getLeftBumper()){
 			LEDs.setViolet();
-		}else if(driver.getRightBumper() && Limelight.hasValidTargets()){
-			LEDs.setRedStrobe();
-		}else if(driver.getRightBumper() && !Limelight.hasValidTargets()){
+		}else if(driver.getLeftBumper() && (Limelight.topHasValidTargets() | Limelight.bottomHasValidTargets() ) ){
+			LEDs.setLava();
+		}else if(driver.getLeftBumper() && (!Limelight.topHasValidTargets() & !Limelight.bottomHasValidTargets() ) ){
 			LEDs.setWhiteStrobe();
 		}else{
 			LEDs.setNeutral();
