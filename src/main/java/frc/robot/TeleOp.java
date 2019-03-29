@@ -1,11 +1,14 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 public class TeleOp {
 	private static XBoxController manip;
 	private static XBoxController driver;
 	private static TeleOp instance;
 	private static boolean wasStartPressed = false;
 	private static boolean wasBumperPressed = false;
+	
 
 
 	private static double[] rocketSetpoints = {-3, 26.6, 55}; //Needs to be changed every match
@@ -91,6 +94,7 @@ public class TeleOp {
 					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
 					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT));
 				};
+				
 			}else{
 				Limelight.changePipelineTop(1);
 				//Limelight.driverVisionTop(0);
@@ -256,7 +260,6 @@ public class TeleOp {
 		 * NEED TO CHANGE THIS BEFORE EVERY MATCH OR
 		 * SETPOINTS WILL BE OFF
 		 */
-
 		if(manip.getYButton()){
 			//Cargo Setpoint Position
 			Elevator.setPosition(cargoSetpoint);
@@ -285,6 +288,11 @@ public class TeleOp {
 
 		if(manip.getRightBumper()){
 			LEDs.setLime();
+			if(Elevator.getPosition() > 5 && Elevator.getPosition() < 35){
+				NetworkTableInstance.getDefault().getTable("limelight-top").getEntry("ledMode").setNumber(2);
+			}else{
+				NetworkTableInstance.getDefault().getTable("limelight-bottom").getEntry("ledMode").setNumber(2);
+			}
 		}else if(manip.getLeftBumper()){
 			LEDs.setViolet();
 		}else if(driver.getLeftBumper() && (Limelight.topHasValidTargets() | Limelight.bottomHasValidTargets() ) ){
@@ -293,6 +301,8 @@ public class TeleOp {
 			LEDs.setWhiteStrobe();
 		}else{
 			LEDs.setNeutral();
+			NetworkTableInstance.getDefault().getTable("limelight-bottom").getEntry("ledMode").setNumber(0);
+			NetworkTableInstance.getDefault().getTable("limelight-top").getEntry("ledMode").setNumber(0);
 		}
 		//System.out.println(Elevator.isLimitSwitchActive());
 		//System.out.println(Elevator.getPosition());
