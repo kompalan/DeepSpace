@@ -31,6 +31,11 @@ public class LEDs {
         colorArray.put("Larson Scanner", -0.01); 
         colorArray.put("Red Strobe", -0.11);
         colorArray.put("White Strobe", -0.05);
+        colorArray.put("Lava Strobe", -0.39);
+    }
+
+    public static void setLava(){
+        leds.set(colorArray.get("Lava Strobe"));
     }
 
     public static void setOrange(){

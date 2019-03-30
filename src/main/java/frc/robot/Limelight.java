@@ -51,8 +51,15 @@ public class Limelight {
 		return topTable.getEntry("ta").getDouble(0.0);
 	}
 	
-	public static boolean hasValidTargets(){
+	public static boolean topHasValidTargets(){
 		if(topTable.getEntry("tv").getDouble(0.0) == 1){
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean bottomHasValidTargets(){
+		if(bottomTable.getEntry("tv").getDouble(0.0) == 1){
 			return true;
 		}
 		return false;
@@ -74,8 +81,12 @@ public class Limelight {
 	
 	//0 enables vision processing to target
 	//1 disables vision processing and increases exposure to act purely as a camera
-	public static void driverVision(int driver_control){
-		NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(driver_control);
+	public static void driverVisionTop(int driver_control){
+		NetworkTableInstance.getDefault().getTable("top").getEntry("camMode").setNumber(driver_control);
+	}
+
+	public static void driverVisionBottom(int driver_control){
+		NetworkTableInstance.getDefault().getTable("bottom").getEntry("camMode").setNumber(driver_control);
 	}
 	
 	public static double getContourArea(){
