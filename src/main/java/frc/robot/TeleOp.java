@@ -94,20 +94,12 @@ public class TeleOp {
 	
 					DriveTrain.setAllBreak();
 					Limelight.dumbLineupTop();
-	
-					if(driver.getRightStickYAxis() > 0.1){
-						DriveTrain.arcadeDrive(
-							Limelight.output, 
-							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
-						);
-					}else if(driver.getRightStickYAxis() < -0.1){
-						DriveTrain.arcadeDrive(
-							Limelight.output, 
-							Utils.expoDeadzone(driver.getRightStickYAxis() * 0.30, 0.1, 1.2)
-						);
-					}
-	
-					
+
+					DriveTrain.arcadeDrive(
+						Limelight.output, 
+						Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+					);	
+
 					wasBumperPressed = true;
 				}
 			}
@@ -120,18 +112,17 @@ public class TeleOp {
 			Limelight.changePipelineTop(0);
 			Limelight.changePipelineBottom(0);
 			Limelight.driverVision(1);
-				if(driver.getRightTriggerAxis()>0.1){
-					DriveTrain.arcadeDrive(
-					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
-					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)*0.3
+			if(driver.getRightTriggerAxis()>0.1){
+				DriveTrain.arcadeDrive(
+				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
+				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)*0.3
 				);
-				}else{
-					DriveTrain.arcadeDrive(
-					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
-					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
+			}else{
+				DriveTrain.arcadeDrive(
+				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
 				);
-				}
-			
+			}
 		}
 
 	
@@ -274,18 +265,20 @@ public class TeleOp {
 
 		if(manip.getRightBumper()){
 			LEDs.setLime();
+
 		}else if(manip.getLeftBumper()){
 			LEDs.setViolet();
+
 		}else if(driver.getRightBumper() && Limelight.hasValidTargets()){
 			LEDs.setRedStrobe();
+
 		}else if(driver.getRightBumper() && !Limelight.hasValidTargets()){
 			LEDs.setWhiteStrobe();
+
 		}else{
 			LEDs.setNeutral();
+			
 		}
-		//System.out.println(Elevator.isLimitSwitchActive());
-		//System.out.println(Elevator.getPosition());
-
 		
 	}
 

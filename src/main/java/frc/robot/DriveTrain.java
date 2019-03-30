@@ -58,15 +58,15 @@ public class DriveTrain{
         encoderLeftFront = leftMotorFront.getEncoder();
 
         //Setting P, I, D in to SparkMaxes
-        pidControllerRightFront.setP(Constants.kP);
-        pidControllerRightFront.setI(Constants.kI);
-        pidControllerRightFront.setD(Constants.kD);
-        pidControllerRightFront.setIZone(Constants.kIz);
+        pidControllerRightFront.setP(Constants.DT_kP);
+        pidControllerRightFront.setI(Constants.DT_kI);
+        pidControllerRightFront.setD(Constants.DT_kD);
+        pidControllerRightFront.setIZone(Constants.DT_kIz);
 
-        pidControllerLeftFront.setP(Constants.kP);
-        pidControllerLeftFront.setI(Constants.kI);
-        pidControllerLeftFront.setD(Constants.kD);
-        pidControllerLeftFront.setIZone(Constants.kIz);
+        pidControllerLeftFront.setP(Constants.DT_kP);
+        pidControllerLeftFront.setI(Constants.DT_kI);
+        pidControllerLeftFront.setD(Constants.DT_kD);
+        pidControllerLeftFront.setIZone(Constants.DT_kIz);
 
 
         //Out motor output range is -100 percent power to 100 percent power
@@ -164,7 +164,7 @@ public class DriveTrain{
 
     public static double getAvgVelocity(){
         //TODO: Actually Make it an average
-        return encoderLeftFront.getVelocity();
+        return (encoderLeftFront.getVelocity() + encoderRightFront.getVelocity())/2d;
     }
 
 
@@ -200,6 +200,10 @@ public class DriveTrain{
         hyro.reset();
     }
 
+    public static void resetEncs(){
+        encoderLeftFront.setPosition(0);
+        encoderRightFront.setPosition(0);
+    }
     public static int getLeftEncPos(){
         return (int) encoderLeftFront.getPosition();
     }
@@ -207,6 +211,7 @@ public class DriveTrain{
     public static int getRightEncPos(){
         return (int) encoderRightFront.getPosition();
     }
+    
     //Diagnostics
     public static double getRightMotorFrontTemp(){
         return rightMotorFront.getMotorTemperature();

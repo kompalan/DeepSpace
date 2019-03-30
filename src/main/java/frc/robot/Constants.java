@@ -68,11 +68,11 @@ public class Constants {
 	public static final int XB_POS_DRIVER = 0;
 	public static final int XB_POS_MANIP = 1;
 
-	public static final double kP = 0.1; 
-    public static final double kI = 1e-4;
-    public static final double kD = 1; 
-    public static final double kIz = 0;
-    public static final double kFF = 0;
+	public static final double DT_kP = 0.1; 
+    public static final double DT_kI = 1e-4;
+    public static final double DT_kD = 1; 
+    public static final double DT_kIz = 0;
+    public static final double DT_kFF = 0;
     public static final double kMaxOutput = 1.0;
 	public static final double kMinOutput = -1.0;
 

@@ -7,10 +7,11 @@
 
 package frc.robot;
 
+import java.io.IOException;
+
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
-import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 
@@ -18,13 +19,20 @@ import jaci.pathfinder.modifiers.TankModifier;
 public class Robot extends TimedRobot{
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
   Trajectory rocket;
-  Trajectory left;
-  Trajectory right;
   public static double wheelbase_width = 0.7239; //meters
   public static double distance = 5.334; //meters
   public static double wheel_diameter = 0.1524; //meters
   //public TankModifier modifier;
+  double angleDiff = 0.0;
+
+  TankModifier modifier;
+  Trajectory left, right;
+  EncoderFollower right1, left1, rocket1;
+
   public RoboPath rocketPath;
+
+  private Notifier pathNotifier;
+  //SendableChooser<Integer> autochooser;
 
   @Override
   public void robotInit() {
@@ -39,10 +47,22 @@ public class Robot extends TimedRobot{
     Elevator.setPosition(0);
     DriveTrain.resetAHRS();
     rocketPath = new RoboPath();
+    pathNotifier = new Notifier(rocketPath);
+
+    // this.setupFollower();
+    try{
+      rocketPath.setup();
+    }catch(IOException ioe){
+      ioe.printStackTrace();
+    }
+        
   }
 
   @Override
   public void autonomousInit() {
+    //rocketPath = new RoboPath(autochooser.getSelected());
+
+
 
   }
 
@@ -61,7 +81,7 @@ public class Robot extends TimedRobot{
   @Override
   public void teleopPeriodic() {
     TeleOp.run();
-    System.out.println(DriveTrain.getLeftEncPos());
+    System.out.println(DriveTrain.getAHRS());
 
   }
 
@@ -74,6 +94,7 @@ public class Robot extends TimedRobot{
     Limelight.changePipelineBottom(0);
     Limelight.changePipelineTop(0);
     TeleOp.done();
+    DriveTrain.resetAHRS();
     //right.length();
     //int lengthRight = right.length();
     
@@ -83,17 +104,17 @@ public class Robot extends TimedRobot{
   public void testInit(){
         
     DriveTrain.resetAHRS();
-    rocketPath.generateRocketTraj();
+    
+    DriveTrain.setAllBreak();
+    
+    DriveTrain.resetEncs();
+    pathNotifier.startPeriodic(0.02);
+
 
   }
 
   public void testPeriodic(){
-    // right1.calculate(DriveTrain.getRightEncPos());
-    double[] powers = rocketPath.getPower();
-
-    DriveTrain.drive(powers[0], powers[1]);
-
+ 
   }
-
-  
 }
+

@@ -1,12 +1,14 @@
 package frc.robot;
 
+import java.io.IOException;
+
 import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 
-public class RoboPath{
+public class RoboPath implements Runnable{
     Pathfinder instance;
     Trajectory rocket;
     Trajectory left, right;
@@ -16,55 +18,45 @@ public class RoboPath{
     double angleDiff = 0.0;
 
     TankModifier modifier;
-    EncoderFollower right1, left1;
+    EncoderFollower right1, left1, rocket1;
 
-    public void generateRocketTraj(){
-        DriveTrain.resetAHRS();
-        Waypoint[] points = new Waypoint[] {
-          new Waypoint(0, 0, 0),
-          new Waypoint(2, 2, Pathfinder.d2r(45))
-        };
+    public void setup() throws IOException{
+        left = PathfinderFRC.getTrajectory("HPStation.right");
+        right = PathfinderFRC.getTrajectory("HPStation.left");
         
-        Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, 1.7, 2.0, 60.0);
-        Trajectory rocket = Pathfinder.generate(points, config);
-    
-        TankModifier modifier = new TankModifier(rocket).modify(wheelbase_width);
-    
-        Trajectory left = modifier.getLeftTrajectory();
-        Trajectory right = modifier.getRightTrajectory();
-
+        //rocket1 = new EncoderFollower(rocket);
         left1 = new EncoderFollower(left);
         right1 = new EncoderFollower(right);
-
-        left1.reset();
-        left1.configureEncoder(DriveTrain.getLeftEncPos(), 1, wheel_diameter);
-        left1.configurePIDVA(1.0, 0.0, 0.0, 1 / 5, 0);
-
-        right1.configureEncoder(DriveTrain.getRightEncPos(), 1, wheel_diameter);
-        right1.configurePIDVA(1.0, 0.0, 0.0, 1 / 5, 0);
-
+    
+        //left1.reset();
+        left1.configureEncoder(DriveTrain.getLeftEncPos(), 16, wheel_diameter);
+        left1.configurePIDVA(0.0, 0.0, 0.0, 1d / 15d, 0);
+    
+        right1.configureEncoder(DriveTrain.getRightEncPos(), 16, wheel_diameter);
+        right1.configurePIDVA(0.0, 0.0, 0.0, 1d / 15d, 0);
     }
 
-    public double[] getPower(){
-        double l = left1.calculate(DriveTrain.getLeftEncPos());
-        double r = right1.calculate(DriveTrain.getRightEncPos());
-    
-        double gyro_heading = DriveTrain.getAHRS();  // Assuming the gyro is giving a value in degrees
-        double desired_heading = Pathfinder.r2d(left1.getHeading());  // Should also be in degrees
-    
-        // This allows the angle difference to respect 'wrapping', where 360 and 0 are the same value
-        double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
-        angleDifference = angleDifference % 360.0;
-        if (Math.abs(angleDifference) > 180.0) {
-          angleDiff = (angleDifference > 0) ? angleDifference - 360 : angleDiff + 360;
-        } 
-    
-        double turn = 0.8 * (-1.0/80.0) * angleDifference;
-        System.out.println("LEFT: " + ((l+turn)/3));
-        System.out.println("RIGHT: " + ((r-turn)/3));
+    @Override
+    public void run(){
+        if (left1.isFinished() && right1.isFinished()) {
+            //pathNotifier.stop();
+            DriveTrain.drive(0d, 0d);
+          } else {
+            DriveTrain.resetAHRS();
+            double left_speed = left1.calculate(DriveTrain.getLeftEncPos());
+            double right_speed = right1.calculate(DriveTrain.getRightEncPos());
+            double heading = DriveTrain.getAHRS();
+            double desired_heading = -Pathfinder.r2d(left1.getHeading());
+            double heading_difference = Pathfinder.boundHalfDegrees(desired_heading - heading);
+      
+            
+      
+            double turn =  0.1 * (-1.0/80.0) * heading_difference;
+            System.out.println("LEFT: " +  (left_speed + turn));
+            System.out.println("RIGHT: " + (right_speed - turn));
 
-        double[] power = {l+turn, r-turn};
-        return power;
-        //DriveTrain.drive((l+turn)/3, (r-turn)/3);
+            //https://www.chiefdelphi.com/t/problems-with-pathfinder-motion-profiling/163830/3
+            DriveTrain.drive(((left_speed + turn)), -((right_speed - turn)));
+        }
     }
 }
