@@ -25,7 +25,7 @@ public class Robot extends TimedRobot{
     Ingestor.getInstance();
     Diagnostics.getInstance();
     LEDs.getInstance();
-
+    System.out.println("Robot Code Started");
     
   }
 
@@ -54,5 +54,6 @@ public class Robot extends TimedRobot{
   @Override
   public void disabledPeriodic(){
     //LEDs.setNeutral();
+    TeleOp.done();
   }
 }

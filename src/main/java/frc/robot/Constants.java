@@ -43,8 +43,8 @@ public class Constants {
 	public static double ELEVATOR_kFF = 0.00025;
 	public static double ELEVATOR_kIZ = 100;
 
-	public static double ELEVATOR_MAX_OUTPUT = 0.7;
-	public static double ELEVATOR_MIN_OUTPUT = -0.7;
+	public static double ELEVATOR_MAX_OUTPUT = 0.92;
+	public static double ELEVATOR_MIN_OUTPUT = -0.92;
 
 	public static double ELEVATOR_MAX_RPM = 5700;
 
@@ -104,5 +104,7 @@ public class Constants {
 	public static final int ELEVATOR_LIMIT_SWITCH = 0;
 
 
+	public static double TURN_EXPO_CONSTANT = 3;
+	public static double DRIVE_EXPO_CONSTANT = 1.2;
 }
 

@@ -96,34 +96,42 @@ import edu.wpi.first.wpilibj.Solenoid;
         lHatchesClaw.set(false);
     }
 
-    //
+    //Flips up the claws
     public static void flipClawUp(){
         lHatchesFlip.set(true);
     }
 
+    //Returns true if the claw is flipped up
     public static boolean getFlipped(){
         return lHatchesFlip.get();
     }
 
+    //Puts down the claws
     public static void flipClawDown(){
         lHatchesFlip.set(false);
     }
 
+    //Sets the power of the wheels in the front of the carriage
     public static void setFrontHolderPower(double power){
         cargoHolderFront.set(ControlMode.PercentOutput, power);
     }
+
+    //Sets the power of the wheels in the back of the carriage
     public static void setBackHolderPower(double power){
         cargoHolderBack.set(ControlMode.PercentOutput, power);
     }
 
+    //Sets the power of the elevator through duty cycling
     public static void setPower(double power){
         elevatorPIDController.setReference(power, ControlType.kDutyCycle, 0, Constants.ELEVATOR_ARB_FEED_FORWARD);
     }
 
+    //Gets the distance between the elevator's current position to its destination
     public static double getError(){
         return Elevator.getPosition() - Elevator.setPosition;
     }
 
+    //Resets the elevator's encoders
     public static void resetEncs(){
         elevatorEncoder.setPosition(0);
     }
@@ -150,14 +158,17 @@ import edu.wpi.first.wpilibj.Solenoid;
         return elevatorEncoder.getVelocity();
     }
 
+    //Resets the elevator's encoders
     public static void zeroElevator(){
         elevatorEncoder.setPosition(0);
     }
 
+    //Returns the opposite of the elevator's limit switch
     public static boolean getElevatorLimitSwitch(){
         return elevatorLimitSwitch.get() == false;
     }
 
+    //Sets the parameters to the elevator's smart motion
     public static void setElevatorSmartMotion(double minVel, double maxVel, double minAcc, double maxAcc, double allowedErr){
         elevatorPIDController.setSmartMotionMaxVelocity(maxVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
         elevatorPIDController.setSmartMotionMinOutputVelocity(minVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
@@ -165,6 +176,7 @@ import edu.wpi.first.wpilibj.Solenoid;
         elevatorPIDController.setSmartMotionAllowedClosedLoopError(allowedErr, Constants.ELEVATOR_SMART_MOTION_SLOT);
     }
 
+    //Sets the pid's p-constant
     public static void setELEVATOR_P(double kP){
         elevatorPIDController.setP(kP);
         elevatorSparkRight.burnFlash();
@@ -172,71 +184,87 @@ import edu.wpi.first.wpilibj.Solenoid;
 
     }
 
+    //Sets the pid's I-constant
     public static void setELEVATOR_I(double kI){
         elevatorPIDController.setI(kI);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the pid's d-constant
     public static void setELEVATOR_D(double kD){
         elevatorPIDController.setD(kD);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the elevator's feed forward constant
     public static void setELEVATOR_FF(double kFF){
         elevatorPIDController.setFF(kFF);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the elevator's integral zone
     public static void setELEVATOR_IZ(double kIZ){
         elevatorPIDController.setIZone(kIZ);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the range for the pid's values
     public static void setELEVATOR_KOUTPUT(double kMinOut, double kMaxOut){
         elevatorPIDController.setOutputRange(kMinOut, kMaxOut);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the maximum velocity of the elevator
     public static void setELEVATOR_MAXVEL(double maxVel){
         elevatorPIDController.setSmartMotionMaxVelocity(maxVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the minimum velocity of the elevator
     public static void setELEVATOR_MINVEL(double minVel){
         elevatorPIDController.setSmartMotionMinOutputVelocity(minVel, Constants.ELEVATOR_SMART_MOTION_SLOT);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the maximum acceleration
     public static void setELEVATOR_MAXACC(double maxAcc){
         elevatorPIDController.setSmartMotionMaxAccel(maxAcc, Constants.ELEVATOR_SMART_MOTION_SLOT);
         elevatorSparkRight.burnFlash();
     }
 
+    //Sets the maximum error the pid can use
     public static void setELEVATOR_MAXERR(double maxerr){
         elevatorPIDController.setSmartMotionAllowedClosedLoopError(maxerr, Constants.ELEVATOR_SMART_MOTION_SLOT);
         elevatorSparkRight.burnFlash();
     }
 
+    //Gets the position of the encoder
     public static double getElevatorEncoder(){
         return elevatorEncoder.getPosition();
     }
 
+    //Tests the elevator encoder
     public static void setElevatorEncoder(){
         elevatorPIDController.setReference(5.00, ControlType.kPosition);
     }
 
+    //Extends the setPower function to allow for a new arb feed forward constant
     public static void setPower(double power, double arbfeedforward){
         elevatorPIDController.setReference(power, ControlType.kDutyCycle, 0, arbfeedforward);
     }
 
+    //Gets the value of the arbitray feed foward constant
     public static double getArbitraryFeedForward(){
         return Constants.ELEVATOR_ARB_FEED_FORWARD;
     }
 
+    //Gets the output voltage of the motors for the wheels connected to the elevator
     public static double getOutputVoltage(){
         return elevatorSparkLeft.getBusVoltage();
     }
 
+
+    
     public static double getAcceleration(){
         return elevatorPIDController.getSmartMotionMaxAccel(Constants.ELEVATOR_SMART_MOTION_SLOT);
     }

@@ -6,61 +6,95 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class Limelight {
-	public static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    public static DriverStation ds = DriverStation.getInstance();
-	
-	private static boolean m_LimelightHasValidTarget = false;
-	private static double m_LimelightDriveCommand = 0.0;
-	private static double m_LimelightSteerCommand = 0.0;
+	/**
+	 * <summary>
+	 * Since Limelight Reads From Network Tables,
+	 * this file is simply networktables operations, like Reading and Writing
+	 * 
+	 * This file also contains Limelight Based PID for Turning to Vision Target Angles
+	 * </summary>
+	 */
 
+	public static DriverStation ds = DriverStation.getInstance();
 	public static double error, integral, derivative, previous_error, output;
 
-	public static void testFeed(){
-		double x = table.getEntry("tx").getDouble(0.0);
-		double y = table.getEntry("ty").getDouble(0.0);		
+	public static String networkTableName = "limelight-top";
+
+	public static NetworkTable topTable = NetworkTableInstance.getDefault().getTable("limelight-top");
+	public static NetworkTable bottomTable = NetworkTableInstance.getDefault().getTable("limelight-bottom");
+	
+	public static void testFeedTop(){
+		double x = topTable.getEntry("tx").getDouble(0.0);
+		double y = topTable.getEntry("ty").getDouble(0.0);		
 	}
 	
-	public static double getX(){
-		return table.getEntry("tx").getDouble(0.0);
+
+	public static void testFeedBottom(){
+		double x = bottomTable.getEntry("tx").getDouble(0.0);
+		double y = bottomTable.getEntry("ty").getDouble(0.0);		
+	}
+	
+
+	public static double getXTop(){
+		return topTable.getEntry("tx").getDouble(0.0);
+	}
+
+	public static double getXBottom(){
+		return bottomTable.getEntry("tx").getDouble(0.0);
 	}
 	
 	public static double getY(){
-		return table.getEntry("ty").getDouble(0.0);
+		return topTable.getEntry("ty").getDouble(0.0);
 	}
 	
 	public static double getA(){
-		return table.getEntry("ta").getDouble(0.0);
+		return topTable.getEntry("ta").getDouble(0.0);
 	}
 	
-	public static boolean hasValidTargets(){
-		if(table.getEntry("tv").getDouble(0.0) == 1){
+	public static boolean topHasValidTargets(){
+		if(topTable.getEntry("tv").getDouble(0.0) == 1){
 			return true;
 		}
 		return false;
 	}
+
+	public static boolean bottomHasValidTargets(){
+		if(bottomTable.getEntry("tv").getDouble(0.0) == 1){
+			return true;
+		}
+		return false;
+	}
+
+	public static void changeNetworkTablesEntry(String networkTableEntry){
+		Limelight.networkTableName = networkTableEntry;
+	}
 	
-	public static void changePipeline(int pipeline_num){
-		NetworkTableEntry pipeline = table.getEntry("pipeline");
+	public static void changePipelineTop(int pipeline_num){
+		NetworkTableEntry pipeline = topTable.getEntry("pipeline");
+		pipeline.setValue(pipeline_num);
+	}
+
+	public static void changePipelineBottom(int pipeline_num){
+		NetworkTableEntry pipeline = bottomTable.getEntry("pipeline");
 		pipeline.setValue(pipeline_num);
 	}
 	
+	//0 enables vision processing to target
+	//1 disables vision processing and increases exposure to act purely as a camera
+	public static void driverVisionTop(int driver_control){
+		NetworkTableInstance.getDefault().getTable("top").getEntry("camMode").setNumber(driver_control);
+	}
+
+	public static void driverVisionBottom(int driver_control){
+		NetworkTableInstance.getDefault().getTable("bottom").getEntry("camMode").setNumber(driver_control);
+	}
+	
 	public static double getContourArea(){
-		return table.getEntry("ta0").getDouble(0.0);
+		return topTable.getEntry("ta0").getDouble(0.0);
 	}
 	
 	public static double getContourX(){
-		return table.getEntry("ty1").getDouble(0.0);
-	}
-
-	public static void lineUp(){
-		Limelight.testFeed();
-		double target = DriveTrain.getAHRS() + Limelight.getX();
-		DriveTrain.turnToAngle(target);
-		System.out.println("TARGET: " + target);
-		System.out.println("AHRS: " + DriveTrain.getAHRS());
-		if(!ds.isEnabled() || (Limelight.getX() >= 5d || Limelight.getX() <= -5d)){
-			DriveTrain.pidDisable();
-		}
+		return topTable.getEntry("ty1").getDouble(0.0);
 	}
 
 	public static void PID(double setpoint){
@@ -74,35 +108,32 @@ public class Limelight {
 		Limelight.output = Constants.LIMELIGHT_P*error + Constants.LIMELIGHT_I*Limelight.integral + Constants.LIMELIGHT_D*Limelight.derivative;
 	}
 
-	public static void dumbLineup(){
-		Limelight.testFeed();
+	public static void dumbLineupTop(){
+		Limelight.testFeedTop();
+		//double x = Math.abs(Limelight.getX()) - 1;
 
-		Limelight.PID(DriveTrain.getAHRS() + Limelight.getX());
+		Limelight.PID(DriveTrain.getAHRS() + Limelight.getXTop());
 
 		//DriveTrain.arcadeDrive(Limelight.output, 0);
+		//DriveTrain.drive(Limelight.output, Limelight.output);
+	}
+
+	public static void dumbLineupBottom(){
+		Limelight.testFeedBottom();
+		//double x = Math.abs(Limelight.getX()) - 1;
+
+		Limelight.PID(DriveTrain.getAHRS() + Limelight.getXBottom());
+
+		//DriveTrain.arcadeDrive(Limelight.output, 0);
+		//DriveTrain.drive(Limelight.output, Limelight.output);
 	}
 
 	public static double getPipeline(){
-		NetworkTableEntry pipeline = table.getEntry("pipeline");
+		NetworkTableEntry pipeline = topTable.getEntry("pipeline");
 		return pipeline.getDouble(-1);
 	}
 
-	public static void dock(){
-		double distance = Utils.distFrom(Utils.degToRad(Limelight.getX()),Utils.degToRad(Limelight.getY()));
-
-		Limelight.dumbLineup();
-		DriveTrain.arcadeDrive(0.3, 0);
-		//Limelight.lineUp();
-		if(distance >= 50){
-			Limelight.changePipeline(1);
-		}
-
-		if(distance <=20){
-			Limelight.changePipeline(1);
-			DriveTrain.drive(Constants.LINEUP_FULL_SPEED, Constants.LINEUP_HALF_SPEED * Constants.DRIVE_STRAIGHT_CONSTANT);
-		}else{
-			DriveTrain.drive(Constants.LINEUP_FULL_SPEED, Constants.LINEUP_FULL_SPEED * Constants.DRIVE_STRAIGHT_CONSTANT);
-		}
+	public static void drive(){
+		DriveTrain.arcadeDrive(0.1, 0);
 	}
-
 }

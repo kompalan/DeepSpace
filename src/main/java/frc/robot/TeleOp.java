@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jdk.jshell.Diag;
@@ -15,6 +16,7 @@ public class TeleOp {
 	private static int currentSetpoint = 0;
 	private static Timer clock;
 	private static boolean wasStartPressed = false;
+	private static boolean wasBumperPressed = false;
 
 	public static TeleOp getInstance() {
 		if (instance == null)
@@ -41,7 +43,7 @@ public class TeleOp {
 		 */
 		//long startTime = System.currentTimeMillis();
 
-		Limelight.changePipeline(0);
+		Limelight.changePipelineTop(0);
 		//System.out.println("HAS VALID TARGETS: " + Limelight.hasValidTargets());
 
 		if(driver.getRightBumper()){
@@ -51,26 +53,80 @@ public class TeleOp {
 		}
 		
 		if(driver.getLeftBumper()){
-			Limelight.changePipeline(1);
-
-			if(Limelight.hasValidTargets()){
-				DriveTrain.setAllBrake();
-				Limelight.dumbLineup();
-
-				DriveTrain.arcadeDrive(Limelight.output, Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2));
+			
+			if(Elevator.getPosition() > 5 && Elevator.getPosition() < 35){
+				Limelight.changePipelineBottom(1);
+				//Limelight.driverVisionBottom(0);
+				if(Limelight.bottomHasValidTargets()){
+					//Limelight.drive();
+	
+	
+					DriveTrain.setAllBrake();
+					Limelight.dumbLineupBottom();
+	
+					if(driver.getRightStickYAxis() > 0.1){
+						DriveTrain.arcadeDrive(
+							Limelight.output, 
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+						);
+					}else if(driver.getRightStickYAxis() < -0.1){
+						DriveTrain.arcadeDrive(
+							Limelight.output, 
+							Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+						);
+					}
+	
+					
+					wasBumperPressed = true;
+				}else{
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT));
+				};
 				
-				
+			}else{
+				Limelight.changePipelineTop(1);
+				//Limelight.driverVisionTop(0);
+				if(Limelight.topHasValidTargets()){
+					//Limelight.drive();
+	
+	
+					DriveTrain.setAllBrake();
+					Limelight.dumbLineupTop();
+
+					DriveTrain.arcadeDrive(
+						Limelight.output, 
+						Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
+					);	
+
+					wasBumperPressed = true;
+				}else{
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT));
+				};
 			}
-
+			
 		}else{
 
-			//Normal Driver Pipeline in order to See the Field During Sandstorm
+			//Normal Driver Pipeline along with "driver vision" in order to see the Field During Sandstorm
+			TeleOp.wasBumperPressed = false;
 			DriveTrain.setAllCoast();
-			Limelight.changePipeline(0);
-			DriveTrain.arcadeDrive(
-				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, 2), 
-				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
-			);
+			Limelight.changePipelineTop(0);
+			Limelight.changePipelineBottom(0);
+			//Limelight.driverVisionTop(1);
+			//Limelight.driverVisionBottom(0);
+				if(driver.getRightTriggerAxis()>0.1){
+					DriveTrain.arcadeDrive(
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)*0.3
+				);
+			}else{
+				DriveTrain.arcadeDrive(
+				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
+				);
+			}
 		}
 
 
@@ -99,9 +155,13 @@ public class TeleOp {
 		if(manip.getRightBumper()){
 			Elevator.setClawIn();
 			LEDs.setLime();
+			driver.setRightRumble(1);
+			driver.setLeftRumble(1);
 		}else{
 			Elevator.setClawOut();
-			
+			LEDs.setNeutral();
+			driver.setRightRumble(0.0);
+			driver.setLeftRumble(0.0);
 		}
 
 		boolean isStartPressed = manip.getRightTriggerButton();
@@ -179,7 +239,25 @@ public class TeleOp {
 		// 	//current % (setpoints length) returns index to next array
 		// 	Elevator.setPosition(rocketSetpoints[((currentSetpoint++) % rocketSetpoints.length)]);
 		// }
-		LEDs.setNeutral();
+		if(manip.getRightBumper()){
+			LEDs.setLime();
+			if(Elevator.getPosition() > 5 && Elevator.getPosition() < 35){
+				NetworkTableInstance.getDefault().getTable("limelight-top").getEntry("ledMode").setNumber(2);
+			}else{
+				NetworkTableInstance.getDefault().getTable("limelight-bottom").getEntry("ledMode").setNumber(2);
+			}
+		}else if(manip.getLeftBumper()){
+			LEDs.setViolet();
+		}else if(driver.getLeftBumper() && (Limelight.topHasValidTargets() | Limelight.bottomHasValidTargets() ) ){
+			LEDs.setLava();
+		}else if(driver.getLeftBumper() && (!Limelight.topHasValidTargets() & !Limelight.bottomHasValidTargets() ) ){
+			LEDs.setWhiteStrobe();
+
+		}else{
+			LEDs.setNeutral();
+			NetworkTableInstance.getDefault().getTable("limelight-bottom").getEntry("ledMode").setNumber(0);
+			NetworkTableInstance.getDefault().getTable("limelight-top").getEntry("ledMode").setNumber(0);
+		}
 		//System.out.println("loop time: " + (System.currentTimeMillis() - startTime));
 		
 		// if(Elevator.getElevatorLimitSwitch()){
@@ -228,5 +306,10 @@ public class TeleOp {
 		// 	System.out.println(System.currentTimeMillis() - startTime);
 		// }
 
+	}
+
+	public static void done(){
+		driver.setRightRumble(0.0);
+		driver.setLeftRumble(0.0);
 	}
 }
