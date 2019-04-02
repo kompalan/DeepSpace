@@ -15,6 +15,7 @@ public class TeleOp {
 
 	private static int currentSetpoint = 0;
 	private static Timer clock;
+
 	private static boolean wasStartPressed = false;
 	private static boolean wasBumperPressed = false;
 
@@ -31,7 +32,26 @@ public class TeleOp {
 		
 
 	public static void init(){
-		LEDs.setNeutral();
+		//LEDs.setNeutral();
+
+		Thread policeModeThread = new Thread(() -> {
+			if(driver.getStartButton()){
+				LEDs.setBlue();
+				try{
+					Thread.sleep(1000);
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+				LEDs.setRed();
+				try{
+					Thread.sleep(1000);
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+			}
+		});
+
+		policeModeThread.start();
 		
 	}
 
@@ -77,7 +97,7 @@ public class TeleOp {
 					}
 	
 					
-					wasBumperPressed = true;
+					TeleOp.wasBumperPressed = true;
 				}else{
 					DriveTrain.arcadeDrive(
 					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
@@ -99,7 +119,7 @@ public class TeleOp {
 						Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, 1.2)
 					);	
 
-					wasBumperPressed = true;
+					TeleOp.wasBumperPressed = true;
 				}else{
 					DriveTrain.arcadeDrive(
 					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
@@ -114,17 +134,18 @@ public class TeleOp {
 			DriveTrain.setAllCoast();
 			Limelight.changePipelineTop(0);
 			Limelight.changePipelineBottom(0);
+			
 			//Limelight.driverVisionTop(1);
 			//Limelight.driverVisionBottom(0);
-				if(driver.getRightTriggerAxis()>0.1){
-					DriveTrain.arcadeDrive(
+			if(driver.getRightTriggerAxis()>0.1){
+				DriveTrain.arcadeDrive(
 					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT)*0.3,
 					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)*0.3
 				);
 			}else{
 				DriveTrain.arcadeDrive(
-				Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
-				Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
+					Utils.expoDeadzone(driver.getLeftStickXAxis(), 0.1, Constants.TURN_EXPO_CONSTANT),
+					Utils.expoDeadzone(driver.getRightStickYAxis(), 0.1, Constants.DRIVE_EXPO_CONSTANT)
 				);
 			}
 		}

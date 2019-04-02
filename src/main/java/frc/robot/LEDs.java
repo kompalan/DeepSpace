@@ -32,6 +32,9 @@ public class LEDs {
         colorArray.put("Red Strobe", -0.11);
         colorArray.put("White Strobe", -0.05);
         colorArray.put("Lava Strobe", -0.39);
+        colorArray.put("Blue", 0.85);
+        colorArray.put("Red", 0.61);
+        colorArray.put("Black", 0.99);
     }
 
     public static void setLava(){
@@ -61,8 +64,21 @@ public class LEDs {
     public static void setRedStrobe(){
         leds.set(colorArray.get("Red Strobe"));
     }
+
     public static void setWhiteStrobe(){
         leds.set(colorArray.get("White Strobe"));
+    }
+
+    public static void setBlue(){
+        leds.set(colorArray.get("Red"));
+    }
+
+    public static void setRed(){
+        leds.set(colorArray.get("Blue"));
+    }
+
+    public static void setBlack(){
+        leds.set(colorArray.get("Black"));
     }
 
 }
