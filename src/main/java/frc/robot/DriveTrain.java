@@ -195,6 +195,15 @@ public class DriveTrain implements PIDOutput{
         return hyropid.isEnabled();
     }
 
+    public static void resetAHRS(){
+        hyro.reset();
+    }
+
+    public static void resetEncs(){
+        encoderLeftFront.setPosition(0);
+        encoderRightFront.setPosition(0);
+    }
+
     //Diagnostics
     public static double getRightMotorFrontTemp(){
         return rightMotorFront.getMotorTemperature();

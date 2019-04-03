@@ -7,11 +7,17 @@
 
 package frc.robot;
 
+import java.io.IOException;
+
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot{
   private static final String ROBOT_FILE_PATH = "/home/lvuser/config/config.json";
+
+  public RoboPath rocketPath;
+  private Notifier pathNotifier;
 
   @Override
   public void robotInit() {
@@ -26,6 +32,16 @@ public class Robot extends TimedRobot{
     Diagnostics.getInstance();
     LEDs.getInstance();
     System.out.println("Robot Code Started");
+
+    rocketPath = new RoboPath();
+    pathNotifier = new Notifier(rocketPath);
+
+    // this.setupFollower();
+    try{
+      rocketPath.setup();
+    }catch(IOException ioe){
+      ioe.printStackTrace();
+    }
     
   }
 
@@ -55,5 +71,21 @@ public class Robot extends TimedRobot{
   public void disabledPeriodic(){
     //LEDs.setNeutral();
     TeleOp.done();
+  }
+
+  @Override
+  public void testInit(){
+        
+    DriveTrain.resetAHRS();
+    DriveTrain.setAllBrake();
+    DriveTrain.resetEncs();
+
+    pathNotifier.startPeriodic(0.02);
+  }
+
+  public void testPeriodic(){
+    if(RoboPath.isDone){
+      pathNotifier.stop();
+    }
   }
 }

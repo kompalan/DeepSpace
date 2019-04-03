@@ -2,8 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jdk.jshell.Diag;
 
 public class TeleOp {
 	private static XBoxController manip;
@@ -71,10 +69,18 @@ public class TeleOp {
 		}else{
 			DriveTrain.shiftDown();
 		}
+
+		if(driver.getAButton()){
+
+			while(driver.getAButton()){
+
+			}
+
+		}
 		
 		if(driver.getLeftBumper()){
 			
-			if(Elevator.getPosition() > 5 && Elevator.getPosition() < 35){
+			if(Elevator.getPosition() > -5 && Elevator.getPosition() < -35){
 				Limelight.changePipelineBottom(1);
 				//Limelight.driverVisionBottom(0);
 				if(Limelight.bottomHasValidTargets()){
@@ -134,7 +140,7 @@ public class TeleOp {
 			DriveTrain.setAllCoast();
 			Limelight.changePipelineTop(0);
 			Limelight.changePipelineBottom(0);
-			
+
 			//Limelight.driverVisionTop(1);
 			//Limelight.driverVisionBottom(0);
 			if(driver.getRightTriggerAxis()>0.1){
