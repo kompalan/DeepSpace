@@ -33,6 +33,28 @@ public class TeleOp {
 
 		LEDs.setNeutral();
 		Elevator.zeroElevator();
+
+		Thread policeModeThread = new Thread(() -> {
+			if(driver.getStartButton()){
+
+				LEDs.setBlue();
+				try{
+					Thread.sleep(1000);
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+				LEDs.setRed();
+				try{
+					Thread.sleep(1000);
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+			}
+		});
+
+		policeModeThread.start();
+
+		System.out.println("Police Thread Started");
 		
 	}
 

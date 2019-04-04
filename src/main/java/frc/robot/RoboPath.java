@@ -19,28 +19,32 @@ public class RoboPath implements Runnable{
 
     TankModifier modifier;
     EncoderFollower right1, left1, rocket1;
+    public static boolean isDone = false;
 
     public void setup() throws IOException{
-        left = PathfinderFRC.getTrajectory("HPStation.right");
-        right = PathfinderFRC.getTrajectory("HPStation.left");
+        left = PathfinderFRC.getTrajectory("Test4.right");
+        right = PathfinderFRC.getTrajectory("Test4.left");
         
         //rocket1 = new EncoderFollower(rocket);
         left1 = new EncoderFollower(left);
         right1 = new EncoderFollower(right);
     
         //left1.reset();
-        left1.configureEncoder(DriveTrain.getLeftEncPos(), 16, wheel_diameter);
+        left1.configureEncoder(DriveTrain.getLeftEncPos(), 26, wheel_diameter);
         left1.configurePIDVA(0.0, 0.0, 0.0, 1d / 15d, 0);
     
-        right1.configureEncoder(DriveTrain.getRightEncPos(), 16, wheel_diameter);
+        right1.configureEncoder(DriveTrain.getRightEncPos(), 26, wheel_diameter);
         right1.configurePIDVA(0.0, 0.0, 0.0, 1d / 15d, 0);
     }
 
     @Override
     public void run(){
         if (left1.isFinished() && right1.isFinished()) {
-            //pathNotifier.stop();
+            
             DriveTrain.drive(0d, 0d);
+            
+            RoboPath.isDone = true;
+
           } else {
             DriveTrain.resetAHRS();
             double left_speed = left1.calculate(DriveTrain.getLeftEncPos());
@@ -56,7 +60,8 @@ public class RoboPath implements Runnable{
             System.out.println("RIGHT: " + (right_speed - turn));
 
             //https://www.chiefdelphi.com/t/problems-with-pathfinder-motion-profiling/163830/3
-            DriveTrain.drive(((left_speed + turn)), -((right_speed - turn)));
+            DriveTrain.drive((left_speed + turn), 
+                            -(right_speed - turn));
         }
     }
 }
