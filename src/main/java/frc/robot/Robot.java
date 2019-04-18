@@ -9,6 +9,7 @@ package frc.robot;
 
 import java.io.IOException;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import jaci.pathfinder.Pathfinder;
@@ -31,9 +32,14 @@ public class Robot extends TimedRobot{
   Trajectory left, right;
   EncoderFollower right1, left1, rocket1;
 
-  public TestPath testPath;
+  public XBoxController driver;
 
-  private Notifier pathNotifier;
+  public TestPath testPath;
+  public PoliceMode police;
+
+  private Notifier pathNotifier, policeNotifier;
+  public static long elapsedTime = 0;
+  public static boolean isRed = false;
   //SendableChooser<Integer> autochooser;
 
   @Override
@@ -50,7 +56,7 @@ public class Robot extends TimedRobot{
     DriveTrain.resetAHRS();
     testPath = new TestPath();
 
-
+    driver = new XBoxController(0);
     // this.setupFollower();
     try{
       testPath.setup();
@@ -58,13 +64,19 @@ public class Robot extends TimedRobot{
     }catch(IOException ioe){
       ioe.printStackTrace();
     }
-        
+
+    // police = new PoliceMode();
     pathNotifier = new Notifier(testPath);
+    Robot.elapsedTime = System.currentTimeMillis();
+    System.out.println(Robot.elapsedTime);
+    // policeNotifier = new Notifier(police);
+    
   }
 
   @Override
   public void autonomousInit() {
     //rocketPath = new RoboPath(autochooser.getSelected());
+    Elevator.flipClawUp();
 
 
 
@@ -87,6 +99,28 @@ public class Robot extends TimedRobot{
     TeleOp.run();
     System.out.println(DriveTrain.getAHRS());
 
+    // if(driver.getBButton()){
+    //   policeNotifier.startPeriodic(0.25);
+    // }else{
+		// 	LEDs.setNeutral();
+		// 	policeNotifier.stop();
+		// 	NetworkTableInstance.getDefault().getTable("limelight-bottom").getEntry("ledMode").setNumber(0);
+		// 	NetworkTableInstance.getDefault().getTable("limelight-top").getEntry("ledMode").setNumber(0);
+		// }
+
+  }
+
+  @Override
+  public void robotPeriodic() {
+    if(System.currentTimeMillis() - elapsedTime >= 250){
+      elapsedTime = System.currentTimeMillis();
+      if(Robot.isRed){
+        Robot.isRed = false;
+      }else{
+        Robot.isRed = true;
+      }
+      System.out.println(Robot.isRed);
+    }
   }
 
   @Override
@@ -98,6 +132,7 @@ public class Robot extends TimedRobot{
     Limelight.changePipelineBottom(0);
     Limelight.changePipelineTop(0);
     TeleOp.done();
+    
     
     //right.length();
     //int lengthRight = right.length();
@@ -122,6 +157,20 @@ public class Robot extends TimedRobot{
 
   }
 
+  public class PoliceMode implements Runnable{
+    boolean isRed = false;
+    @Override
+    public void run() {
+      if(isRed){
+        LEDs.setRed();
+        isRed = true;
+      }else{
+        LEDs.setBlue();
+        isRed = false;
+      }
+    }
+
+  }
 
   public class TestPath implements Runnable{
 
@@ -160,7 +209,7 @@ public class Robot extends TimedRobot{
             
             DriveTrain.drive(0d, 0d);
             pathNotifier.stop();
-
+            
         } else {
             DriveTrain.resetAHRS();
             double left_speed = left1.calculate(DriveTrain.getLeftEncPos());
@@ -171,7 +220,7 @@ public class Robot extends TimedRobot{
       
             
       
-            double turn =  0.05 * (-1.0/80.0) * heading_difference;
+            double turn =  0.8 * (-1.0/80.0) * heading_difference;
             System.out.println("LEFT: " +  (left_speed + turn));
             System.out.println("RIGHT: " + (right_speed - turn));
             System.out.println("HYRO: " + DriveTrain.getAHRS());

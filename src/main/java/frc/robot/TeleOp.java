@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Notifier;
+
 
 public class TeleOp {
 	private static XBoxController manip;
@@ -15,6 +17,14 @@ public class TeleOp {
 	private static double cargoSetpoint = 13.5; //Same with this one
 	private static double humanPlayerCargo = 15;
 
+	public static boolean colorChange = false;
+
+	public static Notifier policeNotifier;
+	public static PoliceMode police;
+	public static boolean isRed = false;
+
+	public static Thread policeThread;
+	public static boolean isAlive = false;
 	public static TeleOp getInstance() {
 		if (instance == null)
 			instance = new TeleOp();
@@ -26,6 +36,8 @@ public class TeleOp {
 		//Port Numbers Correspond to Ports on DS
 		driver = new XBoxController(Constants.XBOX_DRIVER);
 		manip = new XBoxController(Constants.XBOX_MANIP);
+		police = new PoliceMode();
+		policeNotifier = new Notifier(police);
 	}
 		
 
@@ -34,27 +46,27 @@ public class TeleOp {
 		LEDs.setNeutral();
 		Elevator.zeroElevator();
 
-		Thread policeModeThread = new Thread(() -> {
-			if(driver.getStartButton()){
-
+		policeThread = new Thread(() -> {
+			while(!Thread.interrupted()){
 				LEDs.setBlue();
 				try{
-					Thread.sleep(1000);
+					Thread.sleep(150);
 				}catch(InterruptedException e){
 					e.printStackTrace();
 				}
 				LEDs.setRed();
+
 				try{
-					Thread.sleep(1000);
+					Thread.sleep(150);
 				}catch(InterruptedException e){
 					e.printStackTrace();
-				}
+				}	
 			}
 		});
 
-		policeModeThread.start();
-
 		System.out.println("Police Thread Started");
+
+
 		
 	}
 
@@ -313,8 +325,21 @@ public class TeleOp {
 		}else if(driver.getLeftBumper() && (!Limelight.topHasValidTargets() & !Limelight.bottomHasValidTargets() ) ){
 			LEDs.setWhiteStrobe();
 
+		}else if(manip.getStartButton()){
+			Thread.State state = policeThread.getState();
+			Elevator.flipClawDown();
+			Elevator.setPosition(0);
+			if(Robot.isRed){
+				LEDs.setBlue();
+			}else{
+				LEDs.setRed();
+			}
 		}else{
 			LEDs.setNeutral();
+			
+			
+			TeleOp.isAlive = false;
+			//policeNotifier.stop();
 			NetworkTableInstance.getDefault().getTable("limelight-bottom").getEntry("ledMode").setNumber(0);
 			NetworkTableInstance.getDefault().getTable("limelight-top").getEntry("ledMode").setNumber(0);
 		}
@@ -326,4 +351,19 @@ public class TeleOp {
 		driver.setRightRumble(0.0);
 	}
 
+
+	public static class PoliceMode implements Runnable{
+		public boolean isRed = false;
+		@Override
+		public void run() {
+			if(isRed){
+				LEDs.setRed();
+				isRed = true;
+			}else{
+				LEDs.setBlue();
+				isRed = false;
+			}
+		}
+
+	}
 }
